@@ -1,8 +1,2 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =6
-let g:netrw_dirhist_1='/'
-let g:netrw_dirhist_2='/home/blackcap/.config'
-let g:netrw_dirhist_3='/home/blackcap/.config/fish'
-let g:netrw_dirhist_4='/home/blackcap/.oh-my-zsh/custom/enhancd'
-let g:netrw_dirhist_5='/home/blackcap/hs/automa'
-let g:netrw_dirhist_6='/home/blackcap/hs/automa/src'
+let g:netrw_dirhist_cnt =0
