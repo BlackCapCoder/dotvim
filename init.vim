@@ -62,8 +62,8 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
 
 
   " ======= Language specific specific
-  call dein#add('w0rp/ale', 
-      \ { 'for': 'haskell', 'go' })
+  call dein#add('w0rp/ale',
+      \ { 'on_ft': ['hs', 'go'] })
 
   call dein#add('eagletmt/ghcmod-vim',
       \ { 'for': 'haskell' })
@@ -96,7 +96,7 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
       \{'on_ft': ['go', 'html', 'css', 'js', 'php', 'py', 'c', 'cpp', 'h']})
 
 
-  call dein#add('rust-lang/rust.vim'
+  call dein#add('rust-lang/rust.vim',
       \{'for': 'rust'})
 
   " Required:
@@ -116,21 +116,21 @@ endif
 
 
 set completeopt-=preview
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#enable_smart_case = 1
-let g:deoplete#auto_refresh_delay = 0
-let g:deoplete#auto_complete_delay = 0
+let g:deoplete#enable_at_startup        = 1
+let g:deoplete#enable_smart_case        = 1
+let g:deoplete#auto_refresh_delay       = 0
+let g:deoplete#auto_complete_delay      = 0
 let g:deoplete#sources#go#gocode_binary = '~/go/bin/gocode'
-let g:deoplete#enable_refresh_always = 1
-let g:neoterm_position     = 'horizontal'
-let g:neoterm_automap_keys = ',tt'
-let g:closetag_filenames   = "*.html,*.xhtml,*.phtml,*.xml,*.php"
+let g:deoplete#enable_refresh_always    = 1
+let g:neoterm_position                  = 'horizontal'
+let g:neoterm_automap_keys              = ',tt'
+let g:closetag_filenames                = "*.html,*.xhtml,*.phtml,*.xml,*.php"
 
-let g:ctrlp_map = ''
-let g:ranger_map_keys = 0
-let mapleader = " "
-let g:Guifont="Monospace:h20"
-let g:indentguides_ignorelist = ['text', 'haskell', 'hs']
+let g:ctrlp_map                   = ''
+let g:ranger_map_keys             = 0
+let mapleader                     = " "
+let g:Guifont                     = "Monospace:h20"
+let g:indentguides_ignorelist     = ['text', 'haskell', 'hs']
 let g:markdown_composer_autostart = 0
 
 
@@ -178,6 +178,7 @@ set undodir=~/.vim/undo/
 set undofile
 set undolevels=1000
 set undoreload=10000
+set history=50
 
 set autoindent
 set smartindent
@@ -189,14 +190,12 @@ set backspace=indent,eol,start
 set nobackup
 set nowritebackup
 set noswapfile    " http://robots.thoughtbot.com/post/18739402579/global-gitignore#comment-458413287
-set history=50
 set showcmd       " display incomplete commands
 set incsearch     " do incremental searching
 set autowrite     " Automatically :write before running commands
 
 " set nowrap
 set linebreak
-
 set ic
 
 " I don't like themes with backgrounds
