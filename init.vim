@@ -24,8 +24,8 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
 
   " -- Snippets
   call dein#add('MarcWeber/vim-addon-mw-utils')
-  call dein#add('Shougo/neosnippet')
-  call dein#add('Shougo/neosnippet-snippets')
+  " call dein#add('Shougo/neosnippet')
+  " call dein#add('Shougo/neosnippet-snippets')
   call dein#add('garbas/vim-snipmate')
   call dein#add('honza/vim-snippets')
   call dein#add('tomtom/tlib_vim')
@@ -61,6 +61,12 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
   call dein#add('vim-scripts/mru.vim')
 
 
+  call dein#add('michalliu/jsruntime.vim')
+  call dein#add('michalliu/jsoncodecs.vim')
+  call dein#add('michalliu/sourcebeautify.vim')
+  call dein#add('pangloss/vim-javascript')
+
+
   " ======= Language specific specific
   call dein#add('w0rp/ale',
       \ { 'on_ft': ['hs', 'go'] })
@@ -93,11 +99,14 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
 
 
   call dein#add('thaerkh/vim-indentguides',
-      \{'on_ft': ['go', 'html', 'css', 'js', 'php', 'py', 'c', 'cpp', 'h']})
+      \{'on_ft': ['go', 'html', 'css', 'js', 'php', 'py', 'c', 'cpp', 'h', 'sass']})
 
 
   call dein#add('rust-lang/rust.vim',
       \{'for': 'rust'})
+
+  call dein#add('koturn/vim-brainfuck',
+      \{'for': 'brainfuck'})
 
   " Required:
   call dein#end()
@@ -150,9 +159,32 @@ augroup vimrcEx
   " Spellcheck text files
   autocmd FileType text,markdown set spell spelllang=en
 
+  " filetype detection
+  au BufRead,BufNewFile *.bf set filetype=brainfuck
+  au BufRead,BufNewFile *.bef set filetype=befunge | source /home/blackcap/.config/nvim/ftplugin/befunge.vim
+  au BufRead,BufNewFile *.pyth set filetype=pyth | set syntax=python
+  au BufRead,BufNewFile *.joy set filetype=joy | set syntax=haskell
+  au BufRead,BufNewFile *.abe set filetype=05AB1E | set syntax=haskell
+  au BufRead,BufNewFile *.json setf json
+
   " Running the buffer for various languages
   autocmd FileType go nnoremap <buffer> <C-j> :GoRun<CR>
   autocmd FileType rust nnoremap <buffer> <C-j> :! cargo run --release<CR>
+  autocmd FileType brainfuck nnoremap <buffer> <C-j> :BFExecute<CR>
+  autocmd FileType befunge nnoremap <buffer> <C-j> :! befungee %<CR>
+  autocmd FileType pyth nnoremap <buffer> <C-j> :! python3 /home/blackcap/.config/nvim/interp/pyth/pyth.py %<CR>
+  autocmd FileType 05AB1E nnoremap <buffer> <C-j> :! python3 /home/blackcap/.config/nvim/interp/05AB1E/05AB1E.py %<CR>
+  autocmd FileType joy nnoremap <buffer> <C-j> :! joy %<CR>
+
+
+  autocmd FileType css
+    \ vnoremap <buffer> <leader>ss :! css2sass<CR> |
+    \ vnoremap <buffer> <leader>cs :! sassc -a \| beautify-css<CR>
+
+  autocmd FileType css nnoremap <buffer> <leader>cc :%! cleancss % \| beautify-css<CR>:%s/,\n/, /g<CR>:nohl<CR>
+  autocmd FileType css nnoremap <buffer>  <leader>ss mqggVG:! css2sass<CR>:set filetype=sass<CR>'q
+  autocmd FileType sass nnoremap <buffer> <leader>ss mqggVG:! sassc -a \| beautify-css<CR>:set filetype=css<CR>'q
+
 augroup END
 
 
@@ -255,8 +287,33 @@ nnoremap <silent> ,tl :call neoterm#clear()<cr>
 " kills the current job (send a <c-c>)
 nnoremap <silent> ,tc :call neoterm#kill()<cr>
 
+" nnoremap vic vi}
+
 tnoremap <C-j> <C-\><C-n>
 tnoremap <C-k> <C-\><C-n>:
 
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
+nnoremap <Leader>c :CodiUpdate<CR>
+
+vnoremap <leader>5 :!babel --presets "/usr/lib/node_modules/babel-preset-es2015/"<CR>dj
+vnoremap <leader>6 :!babel --presets "/usr/lib/node_modules/babel-preset-es2016/"<CR>
+
+
+let g:codi#autocmd   = "InsertLeave"
+let g:codi#autoclose = 1
+let g:codi#interpreters = {
+      \ 'pyth': {
+          \ 'bin': ['codify-exe', 'python3', '/home/blackcap/.config/nvim/interp/pyth/pyth.py', '-c'],
+          \ 'prompt': '^> ',
+          \ },
+      \ '05AB1E': {
+        \ 'bin': ['codify-exe', 'python3', '/home/blackcap/.config/nvim/interp/05AB1E/05AB1E.py', '-e'],
+        \ 'prompt': '^> ',
+        \ },
+      \ }
+
+" let g:neosnippet#snippets_directory = '~/.config/nvim/snippets'
+" if has('conceal')
+"   set conceallevel=2 concealcursor=niv
+" endif

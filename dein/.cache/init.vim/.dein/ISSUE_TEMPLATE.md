@@ -1,21 +1,12 @@
-If you only have a quick question, consider posting it on the Gitter.
+If you are reporting an issue that involves any JSX (e.g.
+<div>{`${example}`}</div>), PLEASE PLEASE PLEASE make sure you have properly
+setup and are sourcing this plugin https://github.com/mxw/vim-jsx
 
-Otherwise, please include the following:
+WE DO NOT support JSX automatically, you need another plugin to add get this
+functionality.
 
-## Issue description
-- Brief description
-- Expected results
-- Actual results
-- A minimal `.vimrc` that will reproduce the issue
-- Exact steps to reproduce the issue, starting with the command used to open
-  `vim`
-- Any relevant screenshots
-- If it's not too much trouble, a screencast (e.g. asciinema) of the issue
+If applicable, include a snippet of code that we can easily copy and paste that
+replicates your bug.
 
-## Environment
-- Operating system
-- Version of `script` (if you don't know, just paste the last line of the
-  man page)
-- The following **in a pastebin**, to reduce visual clutter:
-  - Entire output of `vim --version`
-  - Log lines (see `:h g:codi#log`)
+Make sure the bug still exists if you disable all other javascript plugins
+except the one noted above, mxw/vim-jsx

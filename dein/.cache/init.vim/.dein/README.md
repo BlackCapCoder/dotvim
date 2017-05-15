@@ -1,148 +1,113 @@
-# codi.vim [![Gitter](https://badges.gitter.im/codi-vim/Lobby.svg)](https://gitter.im/codi-vim/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+# vim-javascript
 
-The interactive scratchpad for hackers.
+JavaScript bundle for vim, this bundle provides syntax highlighting and
+improved indentation.
 
-![Codi demo.](assets/codi.gif)
-
-_Using Codi as a Python scratchpad through the
-[shell wrapper](#shell-wrapper)_
-
-Codi is an interactive scratchpad for hackers, with a similar interface to
-[Numi](https://numi.io). It opens a pane synchronized to your main buffer
-which displays the results of evaluating each line *as you type* (with NeoVim
-or Vim with `+job` and `+channel`, asynchronously). It's extensible to nearly
-any language that provides a REPL (interactive interpreter)!
-
-Languages with built-in support:
-Python, JavaScript, CoffeeScript, Haskell, PureScript, Ruby, OCaml, R,
-Clojure/ClojureScript, PHP, Lua, C++
-
-[Pull requests](https://github.com/metakirby5/codi.vim/pulls)
-for new language support welcome!
-
-*Note:* without async support, evaluation will trigger on cursor hold rather
-than text change.
-
-For more information, check out the [documentation](doc/codi.txt).
-Watch a [screencast](https://ptpb.pw/t/~codi)!
 
 ## Installation
 
-Use your favorite package manager
-([vim-plug](https://github.com/junegunn/vim-plug),
-[Vundle](https://github.com/VundleVim/Vundle.vim),
-[pathogen.vim](https://github.com/tpope/vim-pathogen)),
-or add this directory to your Vim runtime path.
+### Install with [pathogen](https://github.com/tpope/vim-pathogen)
 
-For example, if you're using vim-plug, add the following line to `~/.vimrc`:
+      git clone https://github.com/pangloss/vim-javascript.git ~/.vim/bundle/vim-javascript
+
+alternatively, use a package manager like [vim-plug](https://github.com/junegunn/vim-plug)
+
+
+## Configuration Variables
+
+The following variables control certain syntax highlighting plugins. You can
+add them to your `.vimrc` to enable their features.
+
+-----------------
 
 ```
-Plug 'metakirby5/codi.vim'
+let g:javascript_plugin_jsdoc = 1
 ```
 
-### Dependencies
+Enables syntax highlighting for [JSDocs](http://usejsdoc.org/).
 
-- OS X or Linux (Windows support coming
-  [soon](https://github.com/metakirby5/codi.vim/issues/14)!)
-- Vim 7.4 (with `+job` and `+channel` for asynchronous evaluation) or
-  NeoVim (still in its infancy - please report bugs!)
-- `uname`
-- If not using NeoVim, `script` (BSD or Linux, man page should say at least
-  2013)
+Default Value: 0
 
-Each interpreter also depends on its REPL. These are loaded on-demand. For
-example, if you only want to use the Python Codi interpreter, you will not
-need `ghci`.
+-----------------
 
-Default interpreter dependencies:
-
-  - Python:       `python`
-  - JavaScript:   `node`
-  - CoffeeScript: `coffee`
-  - Haskell:      `ghci` (be really careful with lazy evaluation!)
-  - PureScript    `pulp psci`
-  - Ruby:         `irb`
-  - OCaml:        `ocaml`
-  - R:            `R`
-  - Clojure:      `planck`
-  - PHP:          `psysh`
-  - Lua:          `lua`
-  - C++:          `cling`
-
-## Usage
-
-- `Codi [filetype]` activates Codi for the current buffer, using the provided
-  filetype or the buffer's filetype.
-- `Codi!` deactivates Codi for the current buffer.
-- `Codi!! [filetype]` toggles Codi for the current buffer, using the provided
-  filetype or the buffer's filetype.
-
-### Shell wrapper
-
-A nice way to use Codi is through a shell wrapper that you can stick in your
-`~/.bashrc`:
-
-```sh
-# Codi
-# Usage: codi [filetype] [filename]
-codi() {
-  local syntax="${1:-python}"
-  shift
-  vim -c \
-    "let g:startify_disable_at_vimenter = 1 |\
-    set bt=nofile ls=0 noru nonu nornu |\
-    hi ColorColumn ctermbg=NONE |\
-    hi VertSplit ctermbg=NONE |\
-    hi NonText ctermfg=0 |\
-    Codi $syntax" "$@"
-}
+```
+let g:javascript_plugin_ngdoc = 1
 ```
 
-### Options
+Enables some additional syntax highlighting for NGDocs. Requires JSDoc plugin
+to be enabled as well.
 
-- `g:codi#interpreters` is a list of user-defined interpreters.
-  See the [documentation](doc/codi.txt) for more information.
-- `g:codi#aliases` is a list of user-defined interpreter filetype aliases.
-  See the [documentation](doc/codi.txt) for more information.
+Default Value: 0
 
-The below options can also be set on a per-interpreter basis via
-`g:codi#interpreters`:
+-----------------
 
-- `g:codi#autocmd` determines what autocommands trigger updates.
-  See the [documentation](doc/codi.txt) for more information.
-- `g:codi#width` is the width of the Codi split.
-- `g:codi#rightsplit` is whether or not Codi spawns on the right side.
-- `g:codi#rightalign` is whether or not to right-align the Codi buffer.
-- `g:codi#autoclose` is whether or not to close Codi when the associated
-  buffer is closed.
-- `g:codi#raw` is whether or not to display interpreter results without
-  alignment formatting (useful for debugging).
-- `g:codi#sync` is whether or not to force synchronous execution. No reason to
-  touch this unless you want to compare async to sync.
+```
+let g:javascript_plugin_flow = 1
+```
 
-### Autocommands
+Enables syntax highlighting for [Flow](https://flowtype.org/).
 
-- `CodiEnterPre`, `CodiEnterPost`: When a Codi pane enters.
-- `CodiUpdatePre`, `CodiUpdatePost`: When a Codi pane updates.
-- `CodiLeavePre`, `CodiLeavePost`: When a Codi pane leaves.
+Default Value: 0
 
-## FAQ
+-----------------
 
-- _Why doesn't X work in Codi, when it works in a normal source file?_
-  - Codi is not meant to be a replacement for actually running your program;
-    it supports nothing more than what the underlying REPL supports. This is
-    why Haskell language pragmas don't work and OCaml statements must end with
-    `;;`.
-- _Codi leaves a bunch of old processes running, what's going on?_
-  - The cause of this issue is still unknown, but it happens infrequently. See
-    `:h codi-introduction-warnings` for more information.
-- _Codi doesn't seem to work on my setup._
-  - Check `:h codi-introduction-gotchas`.
+```
+set foldmethod=syntax
+```
 
-## Thanks to
+Enables code folding based on our syntax file.
 
-- [@DanielFGray](https://github.com/DanielFGray) and
-  [@purag](https://github.com/purag) for testing, feedback, and suggestions
-- [@Joaquin-V](https://github.com/Joaquin-V) for helping me discover critical
-  bugs with vanilla settings
-- Everyone who has reported an issue or sent in a pull request :)
+Please note this can have a dramatic effect on performance and because it is a
+global vim option, we do not set it ourselves.
+
+
+## Concealing Characters
+
+You can customize concealing characters, if your font provides the character you want, by defining one or more of the following
+variables:
+
+    let g:javascript_conceal_function             = "ƒ"
+    let g:javascript_conceal_null                 = "ø"
+    let g:javascript_conceal_this                 = "@"
+    let g:javascript_conceal_return               = "⇚"
+    let g:javascript_conceal_undefined            = "¿"
+    let g:javascript_conceal_NaN                  = "ℕ"
+    let g:javascript_conceal_prototype            = "¶"
+    let g:javascript_conceal_static               = "•"
+    let g:javascript_conceal_super                = "Ω"
+    let g:javascript_conceal_arrow_function       = "⇒"
+    let g:javascript_conceal_noarg_arrow_function = "🞅"
+    let g:javascript_conceal_underscore_arrow_function = "🞅"
+
+
+You can enable concealing within VIM with:
+
+    set conceallevel=1
+
+OR if you wish to toggle concealing you may wish to bind a command such as the following which will map `<LEADER>l` (leader is usually the `\` key) to toggling conceal mode:
+
+    map <leader>l :exec &conceallevel ? "set conceallevel=0" : "set conceallevel=1"<CR>
+
+
+## Indentation Specific
+
+* `:h cino-:`
+* `:h cino-star`
+* `:h cino-(`
+* `:h cino-w`
+* `:h cino-U`
+* `:h 'indentkeys'`
+
+## Contributing
+
+Please follow the general code style
+guides (read the code) and in your pull request explain the reason for the
+proposed change and how it is valuable. All p.r.'s will be reviewed by a
+maintainer(s) then, hopefully, merged.
+
+Thank you!
+
+
+## License
+
+Distributed under the same terms as Vim itself. See `:help license`.
