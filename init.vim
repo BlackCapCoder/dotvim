@@ -41,6 +41,7 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
   call dein#add('cloudhead/neovim-fuzzy')
   call dein#add('ctrlpvim/ctrlp.vim')
   call dein#add('euclio/vim-markdown-composer')
+  call dein#add('plasticboy/vim-markdown')
   call dein#add('flazz/vim-colorschemes')
   call dein#add('floobits/floobits-neovim')
   call dein#add('francoiscabrol/ranger.vim')
@@ -59,12 +60,23 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
   call dein#add('tpope/vim-surround')
   call dein#add('tweekmonster/braceless.vim')
   call dein#add('vim-scripts/mru.vim')
-
+  " call dein#add('lucidstack/ctrlp-mpc.vim')
+  call dein#add('jaxbot/browserlink.vim')
 
   call dein#add('michalliu/jsruntime.vim')
   call dein#add('michalliu/jsoncodecs.vim')
   call dein#add('michalliu/sourcebeautify.vim')
   call dein#add('pangloss/vim-javascript')
+  call dein#add('HerringtonDarkholme/yats.vim')
+  call dein#add('ironcamel/vimchat')
+  " call dein#add('mitsuse/autocomplete-swift')
+  call dein#add('Rip-Rip/clang_complete')
+  call dein#add('OmniSharp/omnisharp-vim')
+  call dein#add('tpope/vim-dispatch')
+  call dein#add('rhysd/clever-f.vim')
+  call dein#add('mhinz/vim-startify')
+  call dein#add('junegunn/vim-emoji')
+  call dein#add('vim-scripts/anwolib')
 
 
   " ======= Language specific specific
@@ -81,6 +93,9 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
       \ { 'for': 'haskell' })
 
   call dein#add('Twinside/vim-hoogle',
+      \ { 'for': 'haskell' })
+
+  call dein#add('itchyny/vim-haskell-indent',
       \ { 'for': 'haskell' })
 
 
@@ -142,6 +157,9 @@ let g:Guifont                     = "Monospace:h20"
 let g:indentguides_ignorelist     = ['text', 'haskell', 'hs']
 let g:markdown_composer_autostart = 0
 
+" let g:OmniSharp_server_type = 'v1'
+" let g:OmniSharp_server_type = 'roslyn'
+
 
 augroup vimrcEx
   autocmd!
@@ -157,7 +175,8 @@ augroup vimrcEx
   au BufRead * normal zR
 
   " Spellcheck text files
-  autocmd FileType text,markdown set spell spelllang=en
+  autocmd FileType text,markdown setlocal spell spelllang=en
+  autocmd FileType help setlocal nospell
 
   " filetype detection
   au BufRead,BufNewFile *.bf set filetype=brainfuck
@@ -166,6 +185,11 @@ augroup vimrcEx
   au BufRead,BufNewFile *.joy set filetype=joy | set syntax=haskell
   au BufRead,BufNewFile *.abe set filetype=05AB1E | set syntax=haskell
   au BufRead,BufNewFile *.json setf json
+  au BufRead,BufNewFile *.ts setf typescript
+  au BufRead,BufNewFile *.vv setf V
+  au BufRead,BufNewFile *.idr setf idris | set syntax=haskell
+  au BufRead,BufNewFile *.emojic setf emojicode | set syntax=haskell
+  au BufRead,BufNewFile *.agda setf Agda | set syntax=haskell
 
   " Running the buffer for various languages
   autocmd FileType go nnoremap <buffer> <C-j> :GoRun<CR>
@@ -175,6 +199,14 @@ augroup vimrcEx
   autocmd FileType pyth nnoremap <buffer> <C-j> :! python3 /home/blackcap/.config/nvim/interp/pyth/pyth.py %<CR>
   autocmd FileType 05AB1E nnoremap <buffer> <C-j> :! python3 /home/blackcap/.config/nvim/interp/05AB1E/05AB1E.py %<CR>
   autocmd FileType joy nnoremap <buffer> <C-j> :! joy %<CR>
+  autocmd FileType emojicode set completefunc=emoji#complete |
+        \ set omnifunc=emoji#complete|
+        \ inoremap : :<C-x><C-o><C-p>|
+        \ inoremap <Esc> <esc>:%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge<CR>g;:echo ''<CR>|
+        \ nnoremap <buffer> <C-j> :! emojicodec % && emojicode %:r.emojib<CR>
+  autocmd FileType Agda nnoremap <buffer> <C-j> :! agda %<CR>
+
+  autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
 
 
   autocmd FileType css
@@ -185,8 +217,14 @@ augroup vimrcEx
   autocmd FileType css nnoremap <buffer>  <leader>ss mqggVG:! css2sass<CR>:set filetype=sass<CR>'q
   autocmd FileType sass nnoremap <buffer> <leader>ss mqggVG:! sassc -a \| beautify-css<CR>:set filetype=css<CR>'q
 
+  autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
+  autocmd FileType html vmap <leader>j :BLEvaluateSelection<CR> | noremap <leader>j V:BLEvaluateSelection<CR> | noremap <leader>k :BLEvaluateWord<CR>
+  autocmd FileType javascript vmap <leader>j :BLEvaluateSelection<CR> | noremap <leader>j V:BLEvaluateSelection<CR> | noremap <leader>k :BLEvaluateWord<CR>
+  autocmd FileType css vmap <leader>j :BLEvaluateSelection<CR> | noremap <leader>j V:BLEvaluateSelection<CR> | noremap <leader>k :BLEvaluateWord<CR>
 augroup END
 
+let g:haskellmode_completion_ghc = 0
 
 set number
 set relativenumber
@@ -299,7 +337,7 @@ nnoremap <Leader>c :CodiUpdate<CR>
 vnoremap <leader>5 :!babel --presets "/usr/lib/node_modules/babel-preset-es2015/"<CR>dj
 vnoremap <leader>6 :!babel --presets "/usr/lib/node_modules/babel-preset-es2016/"<CR>
 
-
+let g:clang_library_path='/usr/lib/libclang.so'
 let g:codi#autocmd   = "InsertLeave"
 let g:codi#autoclose = 1
 let g:codi#interpreters = {
@@ -311,9 +349,18 @@ let g:codi#interpreters = {
         \ 'bin': ['codify-exe', 'python3', '/home/blackcap/.config/nvim/interp/05AB1E/05AB1E.py', '-e'],
         \ 'prompt': '^> ',
         \ },
+      \ 'V': {
+        \ 'bin': ['codify-exe', 'python', '/home/blackcap/golf/V/main.py', '-v'],
+        \ 'prompt': '^> ',
+        \ },
       \ }
 
 " let g:neosnippet#snippets_directory = '~/.config/nvim/snippets'
 " if has('conceal')
 "   set conceallevel=2 concealcursor=niv
 " endif
+
+
+nnoremap <Leader>t :!mpc clear; mpc search Any "" \| mpc add; mpc play<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+
+nnoremap <Leader>v :!python ~/golf/V/main.py %<CR>
