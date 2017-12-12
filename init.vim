@@ -120,13 +120,11 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
   call dein#add('itchyny/vim-haskell-indent',
       \ { 'for': 'haskell' })
 
-
   call dein#add('fatih/vim-go',
       \{'on_ft': ['go']})
 
   call dein#add('zchee/deoplete-go',
       \{'on_ft': ['go'], 'build': 'make'})
-
 
   call dein#add('alvan/vim-php-manual',
       \{'on_ft': ['php']})
@@ -134,10 +132,8 @@ if dein#load_state('/home/blackcap/.config/nvim/dein/.')
   call dein#add('2072/PHP-Indenting-for-VIm',
       \{'on_ft': ['php']})
 
-
   call dein#add('thaerkh/vim-indentguides',
       \{'on_ft': ['go', 'html', 'css', 'js', 'php', 'py', 'c', 'cpp', 'h', 'sass']})
-
 
   call dein#add('rust-lang/rust.vim',
       \{'for': 'rust'})
@@ -159,6 +155,7 @@ if dein#check_install()
   call dein#install()
 endif
 "End dein Scripts-------------------------
+
 
 set nofixendofline
 set completeopt-=preview
@@ -245,6 +242,21 @@ let g:codi#interpreters = {
 let g:loaded_matchparen = 1 " Disable parenteces matching for performance
 let g:necoghc_use_stack = 1
 let g:highlightedyank_highlight_duration = 300
+
+
+" I don't like themes with backgrounds
+colorscheme molokai-transparent
+hi TabLine ctermfg=white ctermbg=black
+hi TabLineFill ctermfg=black
+
+" I change the terminal colors based on the system background image
+hi Type ctermfg=blue
+hi Number ctermfg=magenta
+hi Operator ctermfg=red
+hi Keyword ctermfg=red
+hi Structure ctermfg=red
+hi String ctermfg=green
+hi preProc ctermfg=green
 
 
 " filetype detection and syntax markup
@@ -349,11 +361,6 @@ augroup vimrcEx
   autocmd BufWinEnter * silent! loadview
 augroup END
 
-
-" I don't like themes with backgrounds
-colorscheme molokai-transparent
-hi TabLine ctermfg=white ctermbg=black
-hi TabLineFill ctermfg=black
 
 
 " -- Keymaps
@@ -469,15 +476,7 @@ hi HighlightedyankRegion ctermbg=black
 autocmd BufRead,BufNewFile * set signcolumn=yes
 hi clear SignColumn
 
-map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
-
-hi Type ctermfg=blue
-hi Number ctermfg=magenta
-hi Operator ctermfg=red
-hi Keyword ctermfg=red
-hi Structure ctermfg=red
-hi String ctermfg=green
-hi preProc ctermfg=green
+" map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 runtime macros/matchit.vim
 
