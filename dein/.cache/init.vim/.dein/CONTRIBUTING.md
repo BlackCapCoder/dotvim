@@ -1,23 +1,20 @@
-# Problems summary
+# Contributing
 
-## Expected
+## Issues
+When submitting an issue, please include the output by `:GhcModDiagnosis`.
 
-## Environment Information
- * OS:
- * Neovim/Vim/Gvim version:
+```vim
+GhcModDiagnosis
+```
 
-## Provide a minimal .vimrc with less than 50 lines
+It shows your environment information possibly related to ghcmod.vim.
 
-    " Your minimal.vimrc
-
-## Generate a logfile if appropriate
-
- 1. export NVIM_PYTHON_LOG_FILE=/tmp/log
- 2. export NVIM_PYTHON_LOG_LEVEL=DEBUG
- 3. nvim -u minimal.vimrc
- 4. recreate your issue
- 5. cat /tmp/log_{PID}
-
-## Screen shot (if possible)
-
-## Upload the log file
+- Current filetype
+    - ghcmod.vim only works in the buffer with filetype haskell.
+- Filetype status
+    - ghcmod.vim is a ftplugin. See `:help filetype-overview` and `:help filetype-plugins`.
+- ghc-mod executable
+    - ghcmod.vim requires [ghc-mod](https://github.com/kazu-yamamoto/ghc-mod) and it must be placed in your `$PATH`.
+- vimproc.vim
+    - ghcmod.vim requires [vimproc.vim](https://github.com/Shougo/vimproc.vim).
+- ghc-mod version

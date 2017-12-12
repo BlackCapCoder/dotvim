@@ -1,0 +1,38 @@
+2017-11-30T02:02:11.932209678+01:00 [ERROR] log_panics:thread 'unnamed' panicked at 'called `Result::unwrap()` on an `Err` value: IoError(Error { repr: Os { code: 32, message: "Broken pipe" } })': src/libcore/result.rs:859
+stack backtrace:
+   0:     0x5649d782390c - backtrace::backtrace::trace::h82b9191409e83d37
+   1:     0x5649d7823e22 - backtrace::capture::Backtrace::new::hb5a725a088a2a2fc
+   2:     0x5649d78230c7 - log_panics::init::{{closure}}::h6473dee6bec1daf7
+   3:     0x5649d784da8a - std::panicking::rust_panic_with_hook::he88eaf29aec989e2
+   4:     0x5649d784d8d4 - std::panicking::begin_panic::h735e513265dd3c3e
+   5:     0x5649d784d859 - std::panicking::begin_panic_fmt::h4afb704fbdca6bf8
+   6:     0x5649d784d7e7 - rust_begin_unwind
+   7:     0x5649d7899f2d - core::panicking::panic_fmt::h077415e225e0e0e9
+   8:     0x5649d764c918 - core::result::unwrap_failed::h005a07e3558bc2e7
+   9:     0x5649d7668291 - aurelius::websocket::Server::listen::{{closure}}::{{closure}}::h5a638e5aec1984e5
+  10:     0x5649d764a355 - std::panicking::try::do_call::hd98af55f8db8d9d4
+  11:     0x5649d7854b0a - __rust_maybe_catch_panic
+  12:     0x5649d76510a7 - <F as alloc::boxed::FnBox<A>>::call_box::h85e8128157ab46d9
+  13:     0x5649d784c7d5 - std::sys::imp::thread::Thread::new::thread_start::h7d88704a3caef93c
+  14:     0x7f4605782089 - start_thread
+  15:     0x7f46052a247e - __clone
+  16:                0x0 - <unknown>
+2017-11-30T02:35:29.983381151+01:00 [ERROR] log_panics:thread 'unnamed' panicked at 'called `Result::unwrap()` on an `Err` value: IoError(Error { repr: Os { code: 32, message: "Broken pipe" } })': src/libcore/result.rs:859
+stack backtrace:
+   0:     0x55a49fb9390c - backtrace::backtrace::trace::h82b9191409e83d37
+   1:     0x55a49fb93e22 - backtrace::capture::Backtrace::new::hb5a725a088a2a2fc
+   2:     0x55a49fb930c7 - log_panics::init::{{closure}}::h6473dee6bec1daf7
+   3:     0x55a49fbbda8a - std::panicking::rust_panic_with_hook::he88eaf29aec989e2
+   4:     0x55a49fbbd8d4 - std::panicking::begin_panic::h735e513265dd3c3e
+   5:     0x55a49fbbd859 - std::panicking::begin_panic_fmt::h4afb704fbdca6bf8
+   6:     0x55a49fbbd7e7 - rust_begin_unwind
+   7:     0x55a49fc09f2d - core::panicking::panic_fmt::h077415e225e0e0e9
+   8:     0x55a49f9bc918 - core::result::unwrap_failed::h005a07e3558bc2e7
+   9:     0x55a49f9d8291 - aurelius::websocket::Server::listen::{{closure}}::{{closure}}::h5a638e5aec1984e5
+  10:     0x55a49f9ba355 - std::panicking::try::do_call::hd98af55f8db8d9d4
+  11:     0x55a49fbc4b0a - __rust_maybe_catch_panic
+  12:     0x55a49f9c10a7 - <F as alloc::boxed::FnBox<A>>::call_box::h85e8128157ab46d9
+  13:     0x55a49fbbc7d5 - std::sys::imp::thread::Thread::new::thread_start::h7d88704a3caef93c
+  14:     0x7f5ebec63089 - start_thread
+  15:     0x7f5ebe78347e - __clone
+  16:                0x0 - <unknown>

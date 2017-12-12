@@ -1,254 +1,180 @@
-snipMate & UltiSnip Snippets
-============================
+# ghcmod.vim
+[![Build Status](https://api.travis-ci.org/eagletmt/ghcmod-vim.svg)](https://travis-ci.org/eagletmt/ghcmod-vim)
+[![Gitter chat](https://badges.gitter.im/eagletmt/ghcmod-vim.png)](https://gitter.im/eagletmt/ghcmod-vim)
 
-[![Build Status](https://travis-ci.org/honza/vim-snippets.svg)](https://travis-ci.org/honza/vim-snippets)
+Happy Haskell programming on Vim, powered by [ghc-mod](https://github.com/kazu-yamamoto/ghc-mod)
 
-This repository contains snippets files for various programming languages.
+- [http://www.vim.org/scripts/script.php?script\_id=4473](http://www.vim.org/scripts/script.php?script_id=4473)
+- https://github.com/eagletmt/ghcmod-vim/releases
 
-It is community-maintained and many people have contributed snippet files and
-other improvements already.
+## Features
 
-Contents
---------
+- Displaying the type of sub-expressions (`ghc-mod type`)
+- Displaying error/warning messages and their locations (`ghc-mod check` and `ghc-mod lint`)
+- Displaying the expansion of splices (`ghc-mod expand`)
+- Insert split function cases (`ghc-mod split`)
 
-- `snippets/*`: snippets using snipMate format
-- `UltiSnips/*`: snippets using UltiSnips format
+Completions are supported by another plugin.
+See [neco-ghc](https://github.com/eagletmt/neco-ghc) .
 
-Snippet engines supporting vim-snippets
-----------------------------------------
+## Requirements
 
-There are different forks of snippet engines which allow the user to insert
-snippets by typing the name of a snippet hitting the expansion mapping.
+### Vim
+ghcmod.vim contains ftplugin.
+Please make sure that filetype plugin is enabled.
+To check it, type `:filetype` and you would see something like this: `filetype detection:ON  plugin:ON  indent:ON`.
+You can enable it by `:filetype plugin on`.
+I highly recommend adding `filetype plugin indent on` to your vimrc.
+See `:help :filetype-overview` for more details.
 
-- [github.com/SirVer/ultisnips](https://github.com/SirVer/ultisnips):   
-  python, supports all snippets in this repo.
-- [github.com/garbas/vim-snipmate](https://github.com/garbas/vim-snipmate):   
-  VimL, snipmate-snippets, engine sometimes behaves strange. Supports
-  snippets/*
-- [github.com/Shougo/neosnippet](https://github.com/Shougo/neosnippet.vim):   
-  VimL, supports snippets/* with some configuration.
-- [github.com/drmingdrmer/xptemplate](https://github.com/drmingdrmer/xptemplate):
-  Totally different syntax, does not read snippets contained in this file, but
-  it is also very powerful. It does not support vim-snippets (just listing it
-  here for completeness)
+### vimproc
+https://github.com/Shougo/vimproc
 
-There tries to be a more comprehensive list (which still is incomplete) here:
-http://vim-wiki.mawercer.de/wiki/topic/text-snippets-skeletons-templates.html
+### ghc-mod >= 5.0.0
+```sh
+cabal install ghc-mod
+```
 
-UltiSnips has additional features such as high speed, nesting snippets,
-expanding snippets in snippets and offers powerful transformations on text in
-snippets (like visual selections or placeholder texts).
-
-Which one to use? If you have python give
-[SirVer/ultisnips](https://github.com/SirVer/ultisnips) a try because its fast
-and has the most features.
-
-If you have VimL only (vim without python support) your best option is using
-[garbas/vim-snipmate](https://github.com/garbas/vim-snipmate) and cope with the
-minor bugs found in the engine.
-
-Q: Should "snipMate be deprecated in favour of UltiSnips"?
-
-A: No, because snipMate is VimL, and UltiSnips requires Python.
-Some people want to use snippets without having to install Vim with Python
-support. Yes - this sucks.
-
-One solution would be: Use snippets if they are good enough, but allow overriding them
-in UltiSnips. This would avoid most duplication while still serving most users.
-AFAIK there is a nested-placeholder branch for snipMate too. snipMate is still
-improved by Adnan Zafar. So maybe time is not ready to make a final decision yet.
-
-[github issue/discussion](https://github.com/honza/vim-snippets/issues/363)
-
-Vendor Snippets
----------------
-
-Additional library and framework snippets are available for UltiSnips users in
-the `UltiSnips/` directory. These files are removed from the default language
-namespaces to prevent them from all being loaded automatically. If there is a
-separate library, framework, or package you would like to support open a pull
-request!
-
-Additional snippets can be added to the current buffer with the
-`:UltiSnipsAddFiletypes` command followed by the snippet name without the
-"snippets" ending. For example, to add the JavaScript Jasmine snippets, run:
-`:UltiSnipsAddFiletypes javascript-jasmine`. To have this snippet loaded
-everytime a JavaScript file is opened or created you can add the command to your
- -`.vim/ftplugin/javascript.vim` file. Another way is to add
- `autocmd FileType js UltiSnipsAddFiletypes javascript-jasmine` in your `.vimrc`.
-
-
-For more see the UltiSnips docs (`:help UltiSnips`).
-
-Installation
-------------
-
-First be aware that there are many options, see "Snippet engines" above.
-Second be aware than there are [tons of plugin managers](http://vim-wiki.mawercer.de/wiki/topic/vim%20plugin%20managment.html)
-which is why Marc Weber thinks that it doesn't make sense to repeat the same
-repetitive information everywhere.
-
-*Recommended way:*
-[vim-addon-manager](https://github.com/MarcWeber/vim-addon-manager) (because Marc Weber wrote it for exactly
-this reason, it supports simple dependency management). E.g. you're done by this
-line in your `.vimrc`:
+## Details
+If you'd like to give GHC options, set `g:ghcmod_ghc_options`.
 
 ```vim
-" assuming you want to use snipmate snippet engine
-ActivateAddons vim-snippets snipmate
+let g:ghcmod_ghc_options = ['-idir1', '-idir2']
 ```
 
-[vim-pi](https://bitbucket.org/vimcommunity/vim-pi/issue/90/we-really-need-a-web-interface)
-Is the place to discuss plugin managers and repository resources.
-
-About how to install snipMate see [snipmate@garbas](https://github.com/garbas/vim-snipmate)
-
-(Bundle, Pathogen, git clone - keywords to make people find this link by ctrl-f search)
-I know that I should be reading the docs of the snippet engine, just let me copy paste into my `.vimrc`:
-[See this pull request](https://github.com/honza/vim-snippets/pull/307/files).
-
-TROUBLE
-=======
-
-If you still have trouble getting this to work create a GitHub ticket, ask on
-IRC or the mailing list.
-
-Policies / for contributors
----------------------------
-
-Some snippets are useful for almost all languages, so let's try to have the same
-triggers for them:
-
-```
-if : if without else
-ife: if $1 else $2
-eif : else if ($1) { .. }
-el  : else ..
-wh  : while (cond) ...
-```
-
-Don't add useless placeholder default texts like:
-
-```
-if (${1:condition}){
-  ${0:some code here}
-}
-```
-instead use:
-
-```
-if (${1}){
-  ${0:${VISUAL}}
-}
-```
-
-Exception: Functions which are used less often, such as Vim's `matchall()`, `matchstr()`
-functions which case hints may be helpful to remember order. In the VimL case
-get vim-dev plugin which has function completion
-
-Thus for conditions (while, if ..) and block bodies just use ${N} - Thanks
-
-When the snippet can be used to wrap existing code leverage `${VISUAL}`
-
-Open questions:
-What about one line if ee then .. else .. vs if \n .. then \n ... \n else \n .. ?
-Which additional policies to add?
-Discuss at: https://github.com/honza/vim-snippets/issues/230
-
-*folding markers*:
-Until further work is done on `vim-snipmate`, please don't add folding markers
-into snippets. `vim-snipmate` has some comments about how to patch all snippets
-on the fly adding those.
-
-Currently all snippets from UltiSnips have been put into UltiSnips - some work
-on merging should be done (dropping duplicates etc). Also see engines section above.
-
-Related repositories
---------------------
-
-We also encourage people to maintain sets of snippets for particular use cases
-so that all users can benefit from them.  People can list their snippet repositories here:
-
-* https://github.com/rbonvall/snipmate-snippets-bib (snippets for BibTeX files)
-* https://github.com/sudar/vim-arduino-snippets (snippets for Arduino files)
-* https://github.com/zedr/zope-snipmate-bundle.git (snippets for Python, TAL and ZCML)
-* https://github.com/bonsaiben/bootstrap-snippets (snippets for Twitter Bootstrap markup, in HTML and Haml)
-* https://github.com/sniphpets (advanced snippets for PHP, Symfony 2/3, Doctrine and etc.)
-
-Installation using VAM: https://github.com/MarcWeber/vim-addon-manager
-
-Future - ideas - examples
--------------------------
-
-[overview snippet engines](http://vim-wiki.mawercer.de/wiki/topic/text-snippets-skeletons-templates.html)
-If you have ideas you can add them to that list of "snippet engine features by example".
-
-Historical notes
-----------------
-
-[vim-snipmate][1] was originally started by [Michael Sanders][2] who has now
-unfortunately abandoned the project. [Rok Garbas][3] is now maintaining a
-[fork][4] of the project in hopes of improving the existing code base.
-
-Versions / dialects / ..
-========================
-
-There are some issues, such as newer language versions may require other
-snippets than older. If this exists we currently recommend doing this:
-
-* add snippets/ruby.snippets (common snippets)
-* add snippets/ruby-1.8.snippets (1.8 only)
-* add snippets/ruby-1.9.snippets (1.9 only)
-
-then configure https://github.com/garbas/vim-snipmate this way:
+Also, there's buffer-local version `b:ghcmod_ghc_options`.
 
 ```vim
-let g:snipMate = {}
-let g:snipMate.scope_aliases = {}
-let g:snipMate.scope_aliases['ruby'] = 'ruby,ruby-rails,ruby-1.9'
+autocmd BufRead,BufNewFile ~/.xmonad/* call s:add_xmonad_path()
+function! s:add_xmonad_path()
+  if !exists('b:ghcmod_ghc_options')
+    let b:ghcmod_ghc_options = []
+  endif
+  call add(b:ghcmod_ghc_options, '-i' . expand('~/.xmonad/lib'))
+endfunction
 ```
 
-If it happens that you work on a project requiring ruby-1.8 snippets instead,
-consider using `vim-addon-local-vimrc` and override the filetypes.
+### :GhcModType, :GhcModTypeClear
+Type `:GhcModType` on a expression, then the sub-expression is highlighted and its type is echoed.
+If you type `:GhcModType` multiple times, the sub-expression changes.
 
-Well - of course it may not make sense to create a new file for each
-ruby-library-version triplet. Sometimes postfixing a name such as
+1. ![type1](http://cache.gyazo.com/361ad3652a412f780106ab07ad11f206.png)
+2. ![type2](http://cache.gyazo.com/0c884849a971e367c75a6ba68bed0157.png)
+3. ![type3](http://cache.gyazo.com/3644d66a3c5fbc51c01b5bb2053864cd.png)
+4. ![type4](http://cache.gyazo.com/ece85e8a1250bebfd13208a63679a3db.png)
+5. ![type5](http://cache.gyazo.com/71e4c79f9b42faaaf81b4e3695fb4d7f.png)
 
+Since ghc-mod 1.10.8, not only sub-expressions but name bindings and sub-patterns are supported.
+
+- ![type-bind](http://cache.gyazo.com/cee203adbf715f00d2dbd82c5cff3eaa.png)
+- ![type-pat](http://cache.gyazo.com/7a22068b73442e8447a4081d5ddffd31.png)
+
+Type `:GhcModTypeClear` to clear sub-expression's highlight.
+
+Sub-expressions are highlighted as `Search` by default.
+You can customize it by setting `g:ghcmod_type_highlight` .
+
+```vim
+hi ghcmodType ctermbg=yellow
+let g:ghcmod_type_highlight = 'ghcmodType'
 ```
-migrate_lib_20_down
-migrate_lib_20_up
+
+### :GhcModCheck, :GhcModLint
+You can get compiler errors/warnings by `:GhcModCheck` and they are available in quickfix window.
+
+![check](http://cache.gyazo.com/c09399b2fe370ce9d328b8ed12118de8.png)
+
+Similarly, type `:GhcModLint` to get suggestions by `ghc-mod lint`.
+
+If you'd like to pass options to hlint, set `g:ghcmod_hlint_options`.
+
+```vim
+let g:ghcmod_hlint_options = ['--ignore=Redundant $']
 ```
 
-will do it then if syntax has changed.
+![lint](http://cache.gyazo.com/3b64724ce2587e03761fe618457f1c2e.png)
 
-Language maintainers
---------------------
+If you'd like to open in another way the quickfix, set `g:ghcmod_open_quickfix_function`.
 
-No one can really be proficient in all programming languages. If you would like
-to maintain snippets for a language, please get in touch.
+```vim
+let g:ghcmod_open_quickfix_function = 'GhcModQuickFix'
+function! GhcModQuickFix()
+  " for unite.vim and unite-quickfix
+  :Unite -no-empty quickfix
 
-Notes: People are interested in snippets - and their interest may wane again.
-This list is kept up-to-date on a best effort basis.
+  " for ctrlp
+  ":CtrlPQuickfix
 
-* Elixir - [lpil](https://github.com/lpil), [iurifq](https://github.com/iurifq)
-* Falcon - [steveno](https://github.com/steveno)
-* HTML Django - [honza](http://github.com/honza)
-* Javascript - [honza](http://github.com/honza)
-* Markdown - [honza](http://github.com/honza)
-* PHP - [chrisyue](http://github.com/chrisyue)
-* Python - [honza](http://github.com/honza)
-* Ruby - [taq](http://github.com/taq)
-* Scala - [gorodinskiy](https://github.com/gorodinskiy)
-* Supercollider - [lpil](https://github.com/lpil)
+  " for FuzzyFinder
+  ":FufQuickfix
+endfunction
+```
 
-License
--------
+### :GhcModCheckAsync, :GhcModLintAsync, :GhcModCheckAndLintAsync
+You can run check and/or lint asynchronously.
 
-Just as the original snipMate plugin, all the snippets are licensed under the
-terms of the MIT license.
+This would be useful when you'd like to run check and/or lint automatically (especially on `BufWritePost`).
+See Customize wiki page for more detail.
 
-[1]: http://github.com/garbas/vim-snipmate
-[2]: http://github.com/msanders
-[3]: http://github.com/garbas
-[4]: http://github.com/garbas/vim-snipmate
-[7]: http://github.com/SirVer/ultisnips
+### :GhcModExpand
+You can see the expansion of splices by `:GhcModExpand` and they are available in quickfix window.
+
+![expand](http://cache.gyazo.com/bcbee2b84f956a87b636a67b5d5af488.png)
+
+This feature was introduced since ghc-mod 1.10.10.
+
+### GhcModSplitFunCase
+Split the function case by examining a type's constructors.
+
+```haskell
+f :: [a] -> a
+f x = _body
+```
+
+When you type `:GhcModSplitFunCase` at the `x` position, ghcmod-vim will replace it with:
+
+```haskell
+f :: [a] -> a
+f [] = _body
+f (x:xs) = _body
+```
+
+### GhcModSigCodegen
+Insert initial code from the given signature.
+
+```haskell
+func :: [a] -> Maybe b -> (a -> b) -> (a,b)
+```
+
+ghcmod-vim will insert initial code using typed holes.
+
+```haskell
+func x y z f = _func_body
+```
+
+Instance declarations are also supported.
+
+```haskell
+newtype D = D (Int,String)
+
+class C a where
+    cInt :: a -> Int
+    cString :: a -> String
+
+instance C D where
+```
+
+ghcmod-vim will insert:
+
+```haskell
+    cInt x = _cInt_body
+    cString x = _cString_body
+```
+
+## Customize
+See wiki page [Customize](https://github.com/eagletmt/ghcmod-vim/wiki/Customize).
+
+## License
+[BSD3 License](http://www.opensource.org/licenses/BSD-3-Clause), the same license as ghc-mod.
+
+Copyright (c) 2012-2013, eagletmt

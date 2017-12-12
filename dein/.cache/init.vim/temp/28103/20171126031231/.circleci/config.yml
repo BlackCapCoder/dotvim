@@ -1,0 +1,82 @@
+version: 2
+
+common: &common
+  docker:
+    - image: neomake/vims-for-tests:10@sha256:641ad965318eca4fd0c9c2ee8f4141103731db9780ccfc9a03c107bebefdcec7
+  working_directory: ~/repo
+  steps:
+    - checkout
+    - run: make --keep-going testcoverage TEST_VIM=$TEST_VIM
+    - run:
+        name: Upload coverage results
+        command: |
+          set -x
+          src_dir="$PWD"
+          shopt -s nullglob
+
+          profiles="$(find build/coverage -name '*.profile')"
+          if [[ -z "$profiles" ]]; then
+            echo "warning: no profiles found in $d."
+            exit 2
+          fi
+          sed -i "s:^SCRIPT  /testplugin/:SCRIPT  $src_dir/:" $profiles
+
+          covimerage write_coverage --source . $profiles
+          covimerage report -m
+          covimerage xml --include 'autoload/*' --include 'plugin/*' --include 'tests/*' --omit 'tests/fixtures/vim/*'
+          codecov -X search gcov pycov -f coverage.xml --required \
+            --name "$CIRCLE_JOB" --flags ${CIRCLE_JOB%%-*} ${CIRCLE_JOB//-/}
+          set +x
+jobs:
+  nvim-master:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/neovim-master
+  nvim-017:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/neovim-v0.1.7
+  nvim-020:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/neovim-v0.2.0
+  vim-master:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/vim-master
+  vim-8069:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/vim8069
+  vim-74-xenial:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/vim74-xenial
+  vim-74-trusty:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/vim74-trusty
+  vim-73:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/vim73
+
+  checkqa:
+    <<: *common
+    steps:
+      - checkout
+      - run: make --keep-going check check_docker circleci_lint
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - nvim-020
+      - nvim-master
+      - nvim-017
+      - vim-8069
+      - vim-master
+      - vim-74-xenial
+      - vim-74-trusty
+      - vim-73
+      - checkqa

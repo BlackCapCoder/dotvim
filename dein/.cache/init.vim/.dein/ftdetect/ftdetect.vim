@@ -1,20 +1,6 @@
-au BufNewFile,BufRead *.{js,jsm,es,es6},Jakefile setf javascript
-
-fun! s:SourceFlowSyntax()
-  if !exists('javascript_plugin_flow') && !exists('b:flow_active') &&
-        \ search('\v\C%^\_s*%(//\s*|/\*[ \t\n*]*)\@flow>','nw')
-    runtime extras/flow.vim
-    let b:flow_active = 1
-  endif
-endfun
-au FileType javascript au BufRead,BufWritePost <buffer> call s:SourceFlowSyntax()
-
-fun! s:SelectJavascript()
-  if getline(1) =~# '^#!.*/bin/\%(env\s\+\)\?node\>'
-    set ft=javascript
-  endif
-endfun
-au BufNewFile,BufRead * call s:SelectJavascript()
+au BufNewFile,BufRead *.idr setf idris
+au BufNewFile,BufRead idris-response setf idris
+au BufNewFile,BufRead *.lidr setf lidris
 autocmd BufRead,BufNewFile *.rs setlocal filetype=rust
 if has('nvim')
   aug set_repl_cmd
@@ -114,8 +100,8 @@ if has('nvim')
           \ elseif executable('lua') |
           \   let s:lua_repl='lua' |
           \ endif |
-          \ if executable('luarocks') && exists("s:lua_repl") |
-          \   call neoterm#repl#set(s:lua_repl . " -l\"luarocks.require\"") |
+          \ if executable('luarocks') && exists('s:lua_repl') |
+          \   call neoterm#repl#set(s:lua_repl . ' -l"luarocks.require"') |
           \ endif
     " TCL
     au FileType tcl
@@ -136,7 +122,28 @@ end
 au BufRead,BufNewFile *.hsc set filetype=haskell
 au BufRead,BufNewFile *.bpk set filetype=haskell
 au BufRead,BufNewFile *.hsig set filetype=haskell
+" recognize .snippet files
+if has("autocmd")
+    autocmd BufNewFile,BufRead *.snippets setf snippets
+endif
 au BufRead,BufNewFile *.rs set filetype=rust
+au BufNewFile,BufRead *.{js,mjs,jsm,es,es6},Jakefile setf javascript
+
+fun! s:SourceFlowSyntax()
+  if !exists('javascript_plugin_flow') && !exists('b:flow_active') &&
+        \ search('\v\C%^\_s*%(//\s*|/\*[ \t\n*]*)\@flow>','nw')
+    runtime extras/flow.vim
+    let b:flow_active = 1
+  endif
+endfun
+au FileType javascript au BufRead,BufWritePost <buffer> call s:SourceFlowSyntax()
+
+fun! s:SelectJavascript()
+  if getline(1) =~# '^#!.*/bin/\%(env\s\+\)\?node\>'
+    set ft=javascript
+  endif
+endfun
+au BufNewFile,BufRead * call s:SelectJavascript()
 autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
 " We take care to preserve the user's fileencodings and fileformats,
 " because those settings are global (not buffer local), yet we want
@@ -175,3 +182,15 @@ au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn} set filetype=markdown
 au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}.{des3,des,bf,bfa,aes,idea,cast,rc2,rc4,rc5,desx} set filetype=markdown
 " Detect syntax file.
 autocmd BufNewFile,BufRead *.b,*.brainfuck  setfiletype brainfuck
+autocmd BufNewFile,BufRead *.swift set filetype=swift
+autocmd BufRead * call s:Swift()
+function! s:Swift()
+  if !empty(&filetype)
+    return
+  endif
+
+  let line = getline(1)
+  if line =~ "^#!.*swift"
+    setfiletype swift
+  endif
+endfunction

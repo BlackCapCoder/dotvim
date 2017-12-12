@@ -1,7 +1,5 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =5
-let g:netrw_dirhist_1='/home/blackcap/hs/wardial/app'
-let g:netrw_dirhist_2='/home/blackcap/hs/test/test'
-let g:netrw_dirhist_3='/home/blackcap/hs/test'
-let g:netrw_dirhist_4='/home/blackcap/tmp/kics2-0.6.0/runtime'
-let g:netrw_dirhist_5='/home/blackcap'
+let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_1='/home/blackcap'
+let g:netrw_dirhist_2='/home/blackcap/.wine/drive_c/GOG Games/Spelunky'
+let g:netrw_dirhist_3='/home/blackcap/tmp/tst'

@@ -1,1 +1,0 @@
-./doc/sexy_scroller.txt
