@@ -21,7 +21,7 @@ function! neomake#makers#ft#python#EnabledMakers() abort
 endfunction
 
 function! neomake#makers#ft#python#pylint() abort
-    return {
+    let maker = {
         \ 'args': [
             \ '--output-format=text',
             \ '--msg-template="{path}:{line}:{column}:{C}: [{symbol}] {msg} [{msg_id}]"',
@@ -38,6 +38,12 @@ function! neomake#makers#ft#python#pylint() abort
         \   function('neomake#postprocess#GenericLengthPostprocess'),
         \   function('neomake#makers#ft#python#PylintEntryProcess'),
         \ ]}
+    function! maker.filter_output(lines, context) abort
+        if a:context.source ==# 'stderr'
+            call filter(a:lines, "v:val !=# 'No config file found, using default configuration'")
+        endif
+    endfunction
+    return maker
 endfunction
 
 function! neomake#makers#ft#python#PylintEntryProcess(entry) abort
@@ -62,15 +68,24 @@ function! neomake#makers#ft#python#PylintEntryProcess(entry) abort
 endfunction
 
 function! neomake#makers#ft#python#flake8() abort
-    return {
+    let maker = {
         \ 'args': ['--format=default'],
         \ 'errorformat':
             \ '%E%f:%l: could not compile,%-Z%p^,' .
             \ '%A%f:%l:%c: %t%n %m,' .
             \ '%A%f:%l: %t%n %m,' .
             \ '%-G%.%#',
-        \ 'postprocess': function('neomake#makers#ft#python#Flake8EntryProcess')
+        \ 'postprocess': function('neomake#makers#ft#python#Flake8EntryProcess'),
+        \ 'short_name': 'fl8',
         \ }
+
+    " @vimlint(EVL103, 1, a:jobinfo)
+    function! maker.supports_stdin(jobinfo) abort
+        let self.args += ['--stdin-display-name', bufname('%')]
+        return 1
+    endfunction
+    " @vimlint(EVL103, 0, a:jobinfo)
+    return maker
 endfunction
 
 function! neomake#makers#ft#python#Flake8EntryProcess(entry) abort
@@ -253,6 +268,7 @@ function! neomake#makers#ft#python#python() abort
         \ 'serialize': 1,
         \ 'serialize_abort_on_error': 1,
         \ 'output_stream': 'stdout',
+        \ 'short_name': 'py',
         \ }
 endfunction
 
@@ -278,8 +294,18 @@ endfunction
 " --fast-parser: adds experimental support for async/await syntax
 " --silent-imports: replaced by --ignore-missing-imports
 function! neomake#makers#ft#python#mypy() abort
+    let l:args = ['--check-untyped-defs', '--ignore-missing-imports']
+
+    " Append '--py2' to args with Python 2 for Python 2 mode.
+    if !exists('s:python_version')
+        let s:python_version = split(split(system('python -V 2>&1'))[1], '\.')
+    endif
+    if !v:shell_error && s:python_version[0] ==# '2'
+        call add(l:args, '--py2')
+    endif
+
     return {
-        \ 'args': ['--check-untyped-defs', '--ignore-missing-imports'],
+        \ 'args': l:args,
         \ 'errorformat':
             \ '%E%f:%l: error: %m,' .
             \ '%W%f:%l: warning: %m,' .

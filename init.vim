@@ -297,7 +297,6 @@ augroup makeCmd
   au FileType java set makeprg=javac\ %\ &&\ java\ %:r
 augroup END
 
-
 augroup vimrcEx
   autocmd!
 
@@ -345,13 +344,9 @@ augroup vimrcEx
   autocmd FileType css nnoremap <buffer>  <leader>ss mqggVG:! css2sass<CR>:set filetype=sass<CR>'q
   autocmd FileType sass nnoremap <buffer> <leader>ss mqggVG:! sassc -a \| beautify-css<CR>:set filetype=css<CR>'q
 
-  autocmd FileType haskell
-    \ setlocal omnifunc=necoghc#omnifunc
-
   autocmd FileType java
     \ setlocal omnifunc=javacomplete#Complete
 
-  autocmd FileType html vmap <leader>j :BLEvaluateSelection<CR> | noremap <leader>j V:BLEvaluateSelection<CR> | noremap <leader>k :BLEvaluateWord<CR>
   autocmd FileType javascript vmap <leader>j :BLEvaluateSelection<CR> | noremap <leader>j V:BLEvaluateSelection<CR> | noremap <leader>k :BLEvaluateWord<CR>
   autocmd FileType css vmap <leader>j :BLEvaluateSelection<CR> | noremap <leader>j V:BLEvaluateSelection<CR> | noremap <leader>k :BLEvaluateWord<CR>
 
@@ -361,6 +356,32 @@ augroup vimrcEx
   autocmd BufWinEnter * silent! loadview
 augroup END
 
+
+" Fixes various issues with interactions between multiplecursor and other
+" plugins
+" Called once right before you start selecting multiple cursors
+function! Multiple_cursors_before()
+  if exists(':NeoCompleteLock')==2
+    exe 'NeoCompleteLock'
+  endif
+  if exists(':NeomakeDisableBuffer')==2
+    exe 'NeomakeDisableBuffer'
+  endif
+
+  call deoplete#disable()
+endfunction
+
+" Called once only when the multiple selection is canceled (default <Esc>)
+function! Multiple_cursors_after()
+  if exists(':NeoCompleteUnlock')==2
+    exe 'NeoCompleteUnlock'
+  endif
+  if exists(':NeomakeDisableBuffer')==2
+    exe 'NeomakeDisableBuffer'
+  endif
+
+  call deoplete#enable()
+endfunction
 
 
 " -- Keymaps
@@ -446,25 +467,6 @@ nnoremap <Leader>v :!python ~/golf/V/main.py %<CR>
 " \}
 " let g:ale_enabled = 0
 
-" Called once right before you start selecting multiple cursors
-function! Multiple_cursors_before()
-  if exists(':NeoCompleteLock')==2
-    exe 'NeoCompleteLock'
-  endif
-  if exists(':NeomakeDisableBuffer')==2
-    exe 'NeomakeDisableBuffer'
-  endif
-endfunction
-
-" Called once only when the multiple selection is canceled (default <Esc>)
-function! Multiple_cursors_after()
-  if exists(':NeoCompleteUnlock')==2
-    exe 'NeoCompleteUnlock'
-  endif
-  if exists(':NeomakeDisableBuffer')==2
-    exe 'NeomakeDisableBuffer'
-  endif
-endfunction
 
 command! RandomLine execute 'normal! '.(system('/bin/bash -c "echo -n $RANDOM"') % line('$')).'G'
 

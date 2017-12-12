@@ -1,4 +1,7 @@
 !_TAG_FILE_ENCODING	utf-8	//
+:HighlightedyankOff	highlightedyank.jax	/*:HighlightedyankOff*
+:HighlightedyankOn	highlightedyank.jax	/*:HighlightedyankOn*
+:HighlightedyankToggle	highlightedyank.jax	/*:HighlightedyankToggle*
 <Plug>(operator-sandwich-add)	operator-sandwich.jax	/*<Plug>(operator-sandwich-add)*
 <Plug>(operator-sandwich-add-query1st)	operator-sandwich.jax	/*<Plug>(operator-sandwich-add-query1st)*
 <Plug>(operator-sandwich-delete)	operator-sandwich.jax	/*<Plug>(operator-sandwich-delete)*
@@ -23,6 +26,8 @@ OperatorSandwichReplacePost	operator-sandwich.jax	/*OperatorSandwichReplacePost*
 OperatorSandwichReplacePre	operator-sandwich.jax	/*OperatorSandwichReplacePre*
 b:context_filetype_filetypes	context_filetype.jax	/*b:context_filetype_filetypes*
 b:highlightedyank_highlight_duration	highlightedyank.jax	/*b:highlightedyank_highlight_duration*
+b:highlightedyank_max_lines	highlightedyank.jax	/*b:highlightedyank_max_lines*
+b:highlightedyank_timeout	highlightedyank.jax	/*b:highlightedyank_timeout*
 b:operator_sandwich_options	operator-sandwich.jax	/*b:operator_sandwich_options*
 b:operator_sandwich_recipes	operator-sandwich.jax	/*b:operator_sandwich_recipes*
 b:sandwich_recipes	sandwich.jax	/*b:sandwich_recipes*
@@ -46,6 +51,8 @@ g:context_filetype#ignore_composite_filetypes	context_filetype.jax	/*g:context_f
 g:context_filetype#same_filetypes	context_filetype.jax	/*g:context_filetype#same_filetypes*
 g:context_filetype#search_offset	context_filetype.jax	/*g:context_filetype#search_offset*
 g:highlightedyank_highlight_duration	highlightedyank.jax	/*g:highlightedyank_highlight_duration*
+g:highlightedyank_max_lines	highlightedyank.jax	/*g:highlightedyank_max_lines*
+g:highlightedyank_timeout	highlightedyank.jax	/*g:highlightedyank_timeout*
 g:operator#sandwich#default_recipes	operator-sandwich.jax	/*g:operator#sandwich#default_recipes*
 g:operator#sandwich#highlight_duration	operator-sandwich.jax	/*g:operator#sandwich#highlight_duration*
 g:operator#sandwich#options	operator-sandwich.jax	/*g:operator#sandwich#options*
@@ -60,6 +67,7 @@ g:textobj#sandwich#options	textobj-sandwich.jax	/*g:textobj#sandwich#options*
 g:textobj#sandwich#recipes	textobj-sandwich.jax	/*g:textobj#sandwich#recipes*
 g:textobj#sandwich#stimeoutlen	textobj-sandwich.jax	/*g:textobj#sandwich#stimeoutlen*
 g:textobj#sandwich#timeoutlen	textobj-sandwich.jax	/*g:textobj#sandwich#timeoutlen*
+highlightedyank-commands	highlightedyank.jax	/*highlightedyank-commands*
 highlightedyank-highlight-groups	highlightedyank.jax	/*highlightedyank-highlight-groups*
 highlightedyank-index	highlightedyank.jax	/*highlightedyank-index*
 highlightedyank-introduction	highlightedyank.jax	/*highlightedyank-introduction*

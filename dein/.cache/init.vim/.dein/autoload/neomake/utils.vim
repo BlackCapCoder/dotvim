@@ -6,6 +6,8 @@ let s:short_level_to_name = {0: 'E', 1: 'W', 2: 'V', 3: 'D'}
 
 let s:is_testing = exists('g:neomake_test_messages')
 
+let s:refs_for_profiling = []
+
 function! s:reltime_lastmsg() abort
     if exists('s:last_msg_ts')
         let cur = neomake#compat#reltimefloat()
@@ -345,10 +347,18 @@ function! neomake#utils#GetSetting(key, maker, default, ft, bufnr, ...) abort
         endif
     endif
 
+    let Ret2 = s:get_oldstyle_setting(a:key, a:maker, a:default, a:ft, a:bufnr, maker_only)
+    if v:profiling && type(Ret2) == type(function('tr'))
+        let s:refs_for_profiling += [Ret2]
+    endif
+    return Ret2
+endfunction
+
+function! s:get_oldstyle_setting(key, maker, default, ft, bufnr, maker_only) abort
     let maker_name = has_key(a:maker, 'name') ? a:maker.name : ''
-    if maker_only && empty(maker_name)
+    if a:maker_only && empty(maker_name)
         if has_key(a:maker, a:key)
-            return a:maker[a:key]
+            return get(a:maker, a:key)
         endif
         return a:default
     endif
@@ -378,10 +388,10 @@ function! neomake#utils#GetSetting(key, maker, default, ft, bufnr, ...) abort
     endfor
 
     if has_key(a:maker, a:key)
-        return a:maker[a:key]
+        return get(a:maker, a:key)
     endif
 
-    let key = maker_only ? maker_name.'_'.a:key : a:key
+    let key = a:maker_only ? maker_name.'_'.a:key : a:key
     " Look for 'neomake_'.key in the buffer and global namespace.
     let bufvar = neomake#compat#getbufvar(a:bufnr, 'neomake_'.key, s:unset)
     if bufvar isnot s:unset
@@ -485,11 +495,19 @@ function! neomake#utils#ExpandArgs(args) abort
     return ret
 endfunction
 
+function! neomake#utils#log_exception(error, ...) abort
+    let log_context = a:0 ? a:1 : {'bufnr': bufnr('%')}
+    redraw
+    echom printf('Neomake error in: %s', v:throwpoint)
+    call neomake#utils#ErrorMessage(a:error, log_context)
+    call neomake#utils#DebugMessage(printf('(in %s)', v:throwpoint), log_context)
+endfunction
+
+let s:hook_context_stack = []
 function! neomake#utils#hook(event, context, ...) abort
     if exists('#User#'.a:event)
         let jobinfo = a:0 ? a:1 : (
                     \ has_key(a:context, 'jobinfo') ? a:context.jobinfo : {})
-        let g:neomake_hook_context = a:context
 
         let args = [printf('Calling User autocmd %s with context: %s.',
                     \ a:event, string(map(copy(a:context), "v:key ==# 'jobinfo' ? '…' : v:val")))]
@@ -497,15 +515,32 @@ function! neomake#utils#hook(event, context, ...) abort
             let args += [jobinfo]
         endif
         call call('neomake#utils#LoudMessage', args)
-        if v:version >= 704 || (v:version == 703 && has('patch442'))
-            exec 'doautocmd <nomodeline> User ' . a:event
-        else
-            exec 'doautocmd User ' . a:event
+
+        if exists('g:neomake_hook_context')
+            call add(s:hook_context_stack, g:neomake_hook_context)
         endif
-        unlet g:neomake_hook_context
-    else
-        call neomake#utils#DebugMessage(printf(
-                    \ 'Skipping User autocmd %s: no hooks.', a:event))
+        unlockvar g:neomake_hook_context
+        let g:neomake_hook_context = a:context
+        lockvar 1 g:neomake_hook_context
+        try
+            if v:version >= 704 || (v:version == 703 && has('patch442'))
+                exec 'doautocmd <nomodeline> User ' . a:event
+            else
+                exec 'doautocmd User ' . a:event
+            endif
+        catch
+            call neomake#utils#log_exception(printf(
+                        \ 'Error during User autocmd for %s: %s.',
+                        \ a:event, v:exception), jobinfo)
+        finally
+            if !empty(s:hook_context_stack)
+                unlockvar g:neomake_hook_context
+                let g:neomake_hook_context = remove(s:hook_context_stack, -1)
+                lockvar 1 g:neomake_hook_context
+            else
+                unlet g:neomake_hook_context
+            endif
+        endtry
     endif
 endfunction
 
@@ -580,7 +615,7 @@ function! neomake#utils#shellescape(arg) abort
     return shellescape(a:arg)
 endfunction
 
-function! neomake#utils#write_tempfile(bufnr, temp_file) abort
+function! neomake#utils#get_buffer_lines(bufnr) abort
     let buflines = getbufline(a:bufnr, 1, '$')
     " Special case: empty buffer; do not write an empty line in this case.
     if len(buflines) > 1 || buflines != ['']
@@ -590,7 +625,11 @@ function! neomake#utils#write_tempfile(bufnr, temp_file) abort
             call add(buflines, '')
         endif
     endif
-    call writefile(buflines, a:temp_file, 'b')
+    return buflines
+endfunction
+
+function! neomake#utils#write_tempfile(bufnr, temp_file) abort
+    call writefile(neomake#utils#get_buffer_lines(a:bufnr), a:temp_file, 'b')
 endfunction
 
 " Wrapper around fnamemodify that handles special buffers (e.g. fugitive).
@@ -620,6 +659,14 @@ function! neomake#utils#fix_self_ref(obj, ...) abort
         endif
         if type(obj[k]) == type({})
             let obj[k] = neomake#utils#fix_self_ref(obj[k], a:0 ? a:1 + [[len(a:1)+1, [a:obj, k]]] : [[1, [a:obj, k]]])
+        elseif has('nvim')
+            " Ensure that it can be used as a string.
+            " Ref: https://github.com/neovim/neovim/issues/7432
+            try
+                call string(obj[k])
+            catch /^Vim(call):E724:/
+                let obj[k] = '<unrepresentable object, type='.type(obj).'>'
+            endtry
         endif
     endfor
     return obj

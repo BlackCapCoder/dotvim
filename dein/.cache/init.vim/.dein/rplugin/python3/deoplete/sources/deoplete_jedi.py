@@ -12,8 +12,7 @@ from .base import Base
 
 def sort_key(item):
     w = item.get('name')
-    l = len(w)
-    z = l - len(w.lstrip('_'))
+    z = len(w) - len(w.lstrip('_'))
     return (('z' * z) + w.lower()[z:], len(w))
 
 
@@ -62,7 +61,7 @@ class Source(Base):
         root_log = logging.getLogger('deoplete')
 
         if self.debug_server is not None and self.debug_server:
-            self.debug_enabled = True
+            self.is_debug_enabled = True
             if isinstance(self.debug_server, str):
                 log_file = self.debug_server
             else:
@@ -71,7 +70,7 @@ class Source(Base):
                         log_file = handler.baseFilename
                         break
 
-        if not self.debug_enabled:
+        if not self.is_debug_enabled:
             child_log = root_log.getChild('jedi')
             child_log.propagate = False
 

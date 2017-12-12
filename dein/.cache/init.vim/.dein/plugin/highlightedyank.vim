@@ -1,5 +1,5 @@
 " highlighted-yank: Make the yanked region apparent!
-" Last Change: 03-Oct-2017.
+" Last Change: 04-Dec-2017.
 " Maintainer : Masaaki Nakamura <mckn@outlook.com>
 
 " License    : NYSL
@@ -11,7 +11,7 @@ if exists("g:loaded_highlightedyank")
 endif
 let g:loaded_highlightedyank = 1
 
-function! s:keymap(...) abort
+function! s:keymap() abort
   if stridx(&cpoptions, 'y') < 0
     nnoremap <silent> <Plug>(highlightedyank) :<C-u>call highlightedyank#yank('n')<CR>
     xnoremap <silent> <Plug>(highlightedyank) :<C-u>call highlightedyank#yank('x')<CR>
@@ -35,12 +35,6 @@ augroup highlightedyank-event-ColorScheme
   autocmd ColorScheme * call s:default_highlight()
 augroup END
 
-" intrinsic keymappings
-noremap <Plug>(highlightedyank-y) y
-noremap <Plug>(highlightedyank-doublequote) "
-noremap <Plug>(highlightedyank-g@) g@
-noremap <Plug>(highlightedyank-gv) gv
-
 if exists('##TextYankPost') && !hasmapto('<Plug>(highlightedyank)') && !exists('g:highlightedyank_disable_autocmd')
   augroup highlightedyank
     autocmd!
@@ -54,3 +48,8 @@ else
     augroup END
   endif
 endif
+
+" commands
+command! -nargs=0 -bar HighlightedyankOn     call highlightedyank#on()
+command! -nargs=0 -bar HighlightedyankOff    call highlightedyank#off()
+command! -nargs=0 -bar HighlightedyankToggle call highlightedyank#toggle()

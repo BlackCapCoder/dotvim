@@ -2,7 +2,7 @@ version: 2
 
 common: &common
   docker:
-    - image: neomake/vims-for-tests:10@sha256:641ad965318eca4fd0c9c2ee8f4141103731db9780ccfc9a03c107bebefdcec7
+    - image: neomake/vims-for-tests:18@sha256:a6e8e301943607faf4dad1385dad621690374b3be7121a33b5569fffe10e3a4c
   working_directory: ~/repo
   steps:
     - checkout
@@ -11,19 +11,8 @@ common: &common
         name: Upload coverage results
         command: |
           set -x
-          src_dir="$PWD"
-          shopt -s nullglob
-
-          profiles="$(find build/coverage -name '*.profile')"
-          if [[ -z "$profiles" ]]; then
-            echo "warning: no profiles found in $d."
-            exit 2
-          fi
-          sed -i "s:^SCRIPT  /testplugin/:SCRIPT  $src_dir/:" $profiles
-
-          covimerage write_coverage --source . $profiles
-          covimerage report -m
-          covimerage xml --include 'autoload/*' --include 'plugin/*' --include 'tests/*' --omit 'tests/fixtures/vim/*'
+          coverage report -m --skip-covered
+          coverage xml
           codecov -X search gcov pycov -f coverage.xml --required \
             --name "$CIRCLE_JOB" --flags ${CIRCLE_JOB%%-*} ${CIRCLE_JOB//-/}
           set +x
@@ -40,6 +29,14 @@ jobs:
     <<: *common
     environment:
       TEST_VIM=/vim-build/bin/neovim-v0.2.0
+  nvim-021:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/neovim-v0.2.1
+  nvim-022:
+    <<: *common
+    environment:
+      TEST_VIM=/vim-build/bin/neovim-v0.2.2
   vim-master:
     <<: *common
     environment:
@@ -65,14 +62,16 @@ jobs:
     <<: *common
     steps:
       - checkout
-      - run: make --keep-going check check_docker circleci_lint
+      - run: make --keep-going check check_docker check_lint_diff
 
 workflows:
   version: 2
   test:
     jobs:
-      - nvim-020
+      - nvim-022
       - nvim-master
+      - nvim-021
+      - nvim-020
       - nvim-017
       - vim-8069
       - vim-master

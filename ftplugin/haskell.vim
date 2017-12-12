@@ -1,6 +1,7 @@
 hi ghcmodType ctermbg=232
 let g:ghcmod_type_highlight = 'ghcmodType'
 let hscoptions="A"
+setlocal omnifunc=necoghc#omnifunc
 
 noremap <C-l> :GhcModType<CR>
 noremap <Esc> :HoogleClose<CR>:GhcModTypeClear<CR>

@@ -42,16 +42,26 @@ command! NeomakeTestsWaitForNextMessage call s:wait_for_next_message()
 
 function! s:wait_for_message(...)
   let max = 45
-  " let n = len(g:neomake_test_messages)
-  let n = g:neomake_test_messages_last_idx
-  let error = 'No new message appeared after 3s.'
+  let n = g:neomake_test_messages_last_idx + 1
+  let timeout = get(a:0 > 3 ? a:4 : {}, 'timeout', 3000)
+  if timeout < 300
+    throw 'NeomakeTestsWaitForMessage: timeout should be at least 300 (ms), got: '.string(timeout)
+  endif
+  let error = ''
+  let total_slept = 0
   while 1
     let max -= 1
     if max == 0
+      if empty(error)
+        let error = printf('No new message appeared after %dms.', timeout)
+      endif
+      let error .= ' (total wait time: '.total_slept.'m)'
       throw error
     endif
-    exe 'sleep' (max < 25 ? 100 : max < 35 ? 50 : 10).'m'
-    if len(g:neomake_test_messages) != n
+    let ms = (max < 25 ? (timeout/30)+1 : max < 35 ? (timeout/60)+1 : (timeout/300)+1)
+    let total_slept += ms
+    exe 'sleep' ms.'m'
+    if len(g:neomake_test_messages) > n
       try
         call call('s:AssertNeomakeMessage', a:000)
       catch
@@ -144,7 +154,8 @@ function! s:AssertNeomakeMessage(msg, ...)
   let ignore_order = get(options, 'ignore_order', 0)
   let found_but_other_level = -1
   let idx = -1
-  for [l, m, info] in g:neomake_test_messages
+  for msg_entry in g:neomake_test_messages
+    let [l, m, info] = msg_entry
     let r = 0
     let idx += 1
     if a:msg[0] ==# '\'
@@ -218,6 +229,7 @@ function! s:AssertNeomakeMessage(msg, ...)
     let g:neomake_test_messages_last_idx = idx
     " Make it count as a successful assertion.
     Assert 1
+    call add(g:_neomake_test_asserted_messages, msg_entry)
     return 1
   endfor
   if found_but_before || found_but_other_level != -1
@@ -334,26 +346,21 @@ function! g:entry_maker.get_list_entries(...) abort
   \   {'text': 'error', 'lnum': 1, 'type': 'E'}])
 endfunction
 let g:doesnotexist_maker = {'exe': 'doesnotexist'}
-let g:sleep_entry_maker = {}
-function! g:sleep_entry_maker.get_list_entries(...) abort
-  sleep 10m
-  return get(g:, 'neomake_test_getlistentries', [
-  \   {'text': 'slept', 'lnum': 1}])
-endfunction
 
 " A maker that generates incrementing errors.
 let g:neomake_test_inc_maker_counter = 0
+let s:shell_argv = split(&shell) + split(&shellcmdflag)
 function! s:IncMakerArgs()
   let g:neomake_test_inc_maker_counter += 1
   let cmd = ''
   for i in range(g:neomake_test_inc_maker_counter)
     let cmd .= 'echo b'.g:neomake_test_inc_maker_counter.' '.g:neomake_test_inc_maker_counter.':'.i.': buf: '.shellescape(bufname('%')).'; '
   endfor
-  return ['-c', cmd]
+  return s:shell_argv[1:] + [cmd]
 endfunction
 let g:neomake_test_inc_maker = {
       \ 'name': 'incmaker',
-      \ 'exe': &shell,
+      \ 'exe': s:shell_argv[0],
       \ 'args': function('s:IncMakerArgs'),
       \ 'errorformat': '%E%f %m',
       \ 'append_file': 0,
@@ -383,37 +390,25 @@ function! NeomakeTestsGetVimMessages()
   return reverse(msgs[0 : idx-1])
 endfunction
 
-" Helpers for monkeypatching a function temporarily.
-" This avoids having to put them into separate files when using profiling,
-" where :runtime would overwrite the functions.
-let s:monkeypatched = []
-function! s:monkeypatch(fname)
-    let orig_f = neomake#utils#redir('fun neomake#compat#get_mode')
-    let restore_f = map(split(orig_f, '\n'), 'v:val[3:]')
-    call add(s:monkeypatched, restore_f)
+function! NeomakeTestsGetMakerWithOutput(func, lines) abort
+  let output_file = tempname()
+  call writefile(a:lines, output_file)
+
+  let maker = call(a:func, [])
+  let maker.exe = 'cat'
+  let maker.args = [output_file]
+  return maker
 endfunction
-function! s:undo_monkeypatch()
-    let tmpfile = tempname()
-    for f in s:monkeypatched
-        let f[0] = substitute(f[0], '^function ', 'function!', '')
-        call writefile(f, tmpfile)
-        exe 'source '.tmpfile
-    endfor
-    let s:monkeypatched = []
-endfunction
-command! -nargs=1 NeomakeTestsMonkeyPatch call s:monkeypatch(<f-args>)
-command! NeomakeTestsMonkeyPatchUndo call s:undo_monkeypatch(<f-args>)
 
 function! s:After()
   if exists('#neomake_automake')
     au! neomake_automake
-    au! neomake_automake_update
   endif
 
   Restore
   unlet! g:expected  " for old Vim with Vader, that does not wrap tests in a function.
 
-  let errors = []
+  let errors = g:neomake_test_errors
 
   " Stop any (non-canceled) jobs.  Canceled jobs might take a while to call the
   " exit handler, but that is OK.
@@ -424,6 +419,12 @@ function! s:After()
     endfor
     call add(errors, 'There were '.len(jobs).' jobs left: '
     \ .string(map(jobs, "v:val.make_id.'.'.v:val.id")))
+  endif
+
+  let unexpected_errors = filter(copy(g:neomake_test_messages),
+        \ 'v:val[0] == 0 && index(g:_neomake_test_asserted_messages, v:val) == -1')
+  if !empty(unexpected_errors)
+    call add(errors, 'found unexpected error messages: '.string(unexpected_errors))
   endif
 
   let status = neomake#GetStatus()
@@ -515,7 +516,7 @@ function! s:After()
   endif
 
   if !empty(errors)
-    throw len(errors).' error(s) in teardown (expect anomalies in following tests!): '.join(errors, "\n")
+    throw len(errors).' error(s) in teardown: '.join(errors, "\n")
   endif
 endfunction
 command! NeomakeTestsGlobalAfter call s:After()

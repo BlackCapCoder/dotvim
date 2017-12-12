@@ -20,7 +20,7 @@ else
   let vader_dir = s:dep_plugins_base . '/vader'
 endif
 let &runtimepath .= ','.vader_dir
-exe 'source' vader_dir.'/plugin/vader.vim'
+exe 'source '.vader_dir.'/plugin/vader.vim'
 
 let s:sourced_plugins = []
 function! s:load_plugin_on_demand(name) abort
@@ -67,9 +67,7 @@ set cmdheight=5
 set textwidth=79
 set hidden
 set splitbelow  " Easier for window numbers (incrementing).
-
-
-set debug=msg,throw
+set complete=.  " Just simple completion from the current buffer.
 
 let mapleader=','
 
@@ -79,3 +77,6 @@ set nomore
 if expand('$NEOMAKE_TEST_NO_COLORSCHEME') !=# '1'
   colorscheme default
 endif
+
+" Set Neovim logfile destination to prevent `.nvimlog` being created.
+let $NVIM_LOG_FILE='/dev/stderr'

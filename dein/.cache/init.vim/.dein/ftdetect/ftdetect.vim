@@ -144,7 +144,7 @@ fun! s:SelectJavascript()
   endif
 endfun
 au BufNewFile,BufRead * call s:SelectJavascript()
-autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
+autocmd BufNewFile,BufRead *.ts setlocal filetype=typescript
 " We take care to preserve the user's fileencodings and fileformats,
 " because those settings are global (not buffer local), yet we want
 " to override them for loading Go files, which are defined to be UTF-8.
@@ -165,15 +165,18 @@ function! s:gofiletype_post()
   let &g:fileencodings = s:current_fileencodings
 endfunction
 
-au BufNewFile *.go setfiletype go | setlocal fileencoding=utf-8 fileformat=unix
-au BufRead *.go call s:gofiletype_pre("go")
-au BufReadPost *.go call s:gofiletype_post()
+augroup vim-go-filetype
+  autocmd!
+  au BufNewFile *.go setfiletype go | setlocal fileencoding=utf-8 fileformat=unix
+  au BufRead *.go call s:gofiletype_pre("go")
+  au BufReadPost *.go call s:gofiletype_post()
 
-au BufNewFile *.s setfiletype asm | setlocal fileencoding=utf-8 fileformat=unix
-au BufRead *.s call s:gofiletype_pre("asm")
-au BufReadPost *.s call s:gofiletype_post()
+  au BufNewFile *.s setfiletype asm | setlocal fileencoding=utf-8 fileformat=unix
+  au BufRead *.s call s:gofiletype_pre("asm")
+  au BufReadPost *.s call s:gofiletype_post()
 
-au BufRead,BufNewFile *.tmpl set filetype=gohtmltmpl
+  au BufRead,BufNewFile *.tmpl set filetype=gohtmltmpl
+augroup end
 
 " vim: sw=2 ts=2 et
 autocmd BufRead,BufNewFile *.tidal setfiletype haskell.tidal

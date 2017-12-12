@@ -42,9 +42,12 @@ function! s:tick_changed(context, update) abort
     let ft = get(a:context, 'ft', getbufvar(bufnr, '&filetype'))
     let prev_tick = getbufvar(bufnr, 'neomake_automake_tick')
     let r = 1
-    if !empty(prev_tick)
+    if empty(prev_tick)
+        call s:debug_log('tick changed (new)')
+    else
         let cur_tick = [getbufvar(bufnr, 'changedtick'), ft]
         if cur_tick == prev_tick
+            call s:debug_log('tick is unchanged')
             return 0
         endif
 
@@ -54,12 +57,14 @@ function! s:tick_changed(context, update) abort
             if adjusted_prev_tick == cur_tick
                 let r = 0
                 call setbufvar(bufnr, 'neomake_automake_tick', adjusted_prev_tick)
+                call s:debug_log('tick is unchanged with BufWritePost adjustment')
             endif
         endif
     endif
     if a:update
-        call setbufvar(bufnr, 'neomake_automake_tick',
-                    \ [getbufvar(bufnr, 'changedtick'), ft])
+        let tick = getbufvar(bufnr, 'changedtick')
+        call s:debug_log('Updating tick: '.tick)
+        call setbufvar(bufnr, 'neomake_automake_tick', [tick, ft])
     endif
     return r
 endfunction
@@ -77,13 +82,11 @@ function! s:neomake_do_automake(context) abort
             call timer_stop(s:timer_by_bufnr[bufnr])
             unlet s:timer_by_bufnr[bufnr]
         endif
-        " call s:debug_log('context: '.string(context))
         if !s:tick_changed(a:context, 0)
             call s:debug_log('buffer was not changed', {'bufnr': bufnr})
             return
         endif
 
-        " call s:start_timer(a:delay, a:context)
         let timer = timer_start(a:context.delay, function('s:automake_delayed_cb'))
         let s:timer_info[timer] = a:context
         if !has_key(a:context, 'pos')
@@ -103,22 +106,26 @@ function! s:neomake_do_automake(context) abort
         call s:debug_log('buffer was not changed', {'bufnr': bufnr})
         return
     endif
-    let prev_make_id = getbufvar(bufnr, 'neomake_automake_make_id')
-    if !empty(prev_make_id)
-        call s:debug_log(printf('stopping previous make run: %s', prev_make_id))
-        call neomake#CancelMake(prev_make_id)
+    let prev_make_ids = getbufvar(bufnr, 'neomake_automake_make_ids')
+    if !empty(prev_make_ids)
+        call s:debug_log(printf('stopping previous make runs: %s', join(prev_make_ids, ', ')))
+        for prev_make_id in prev_make_ids
+          call neomake#CancelMake(prev_make_id)
+        endfor
     endif
 
-    call s:debug_log(printf('enabled makers: %s', join(map(copy(a:context.enabled_makers), "type(v:val) == type('') ? v:val : v:val.name"), ', ')))
+    call s:debug_log(printf('enabled makers: %s', join(map(copy(a:context.maker_jobs), 'v:val.maker.name'), ', ')))
     let jobinfos = neomake#Make({
                 \ 'file_mode': 1,
-                \ 'enabled_makers': a:context.enabled_makers,
+                \ 'jobs': a:context.maker_jobs,
                 \ 'ft': ft,
                 \ 'automake': 1})
     let started_jobs = filter(copy(jobinfos), "!get(v:val, 'finished', 0)")
     call s:debug_log(printf('started jobs: %s', string(map(copy(started_jobs), 'v:val.id'))))
     if !empty(started_jobs)
-        call setbufvar(bufnr, 'neomake_automake_make_id', jobinfos[0].make_id)
+        let make_ids = map(copy(jobinfos), 'v:val.make_id')
+        call setbufvar(bufnr, 'neomake_automake_make_ids',
+              \ neomake#compat#getbufvar(bufnr, 'neomake_automake_make_ids', []) + make_ids)
     endif
 endfunction
 
@@ -187,7 +194,9 @@ function! s:parse_events_from_args(config, string_or_dict_config, ...) abort
         if has('timers')
             let delay = a:1
         else
-            call neomake#utils#QuietMessage('automake: timer support is required for delayed events.')
+            if a:1 != 0
+                call neomake#utils#QuietMessage('automake: timer support is required for delayed events.')
+            endif
             let delay = 0
         endif
     else
@@ -291,7 +300,6 @@ function! neomake#configure#automake_for_buffer(string_or_dict_config, ...) abor
             endif
         endif
     endif
-    call setbufvar(bufnr, 'neomake_automake_tick', [])
     return call('s:configure_buffer', [bufnr] + [a:string_or_dict_config, options])
 endfunction
 
@@ -311,6 +319,7 @@ function! s:configure_buffer(bufnr, ...) abort
     let bufnr = +a:bufnr
     let ft = getbufvar(bufnr, '&filetype')
     let config = s:getbufvar(bufnr, 'neomake', {})
+    let old_config = deepcopy(config)
     if a:0
         let args = [config, a:1]
         if a:0 > 1 && has_key(a:2, 'delay')
@@ -321,25 +330,51 @@ function! s:configure_buffer(bufnr, ...) abort
     endif
 
     " Register the buffer, and remember if it is custom.
-    let s:configured_buffers[bufnr] = {'custom': a:0 > 0}
+    let old_registration = get(s:configured_buffers, bufnr, {})
+    if has_key(s:configured_buffers, bufnr)
+        call extend(s:configured_buffers[bufnr], {'custom': a:0 > 0}, 'force')
+    else
+        let s:configured_buffers[bufnr] = {'custom': a:0 > 0}
+    endif
 
     " Set enabled_makers.
     let options = a:0 > 1 ? a:2 : {}
     if has_key(options, 'makers')
-        let enabled_makers = options.makers
+        let makers = neomake#map_makers(options.makers, ft, 0)
         let source = 'options'
     else
-        let [enabled_makers, source] = neomake#config#get_with_source('automake.enabled_makers', neomake#GetEnabledMakers(ft))
+        let [makers, source] = neomake#config#get_with_source('automake.enabled_makers')
+        if makers is g:neomake#config#undefined
+            unlet makers
+            let makers = neomake#GetEnabledMakers(ft)
+        else
+            let makers = neomake#map_makers(makers, ft, 0)
+        endif
     endif
-    let s:configured_buffers[bufnr].enabled_makers = enabled_makers
+    let options = {'file_mode': 1, 'ft': ft, 'bufnr': bufnr, 'automake': 1}
+    let jobs = neomake#core#create_jobs(options, makers)
+    let s:configured_buffers[bufnr].maker_jobs = jobs
     call s:debug_log(printf('configured buffer for ft=%s (%s)',
-                \ ft, empty(enabled_makers) ? 'no enabled makers' : join(map(copy(enabled_makers), "type(v:val) == type('') ? v:val : v:val.name"), ', ').' ('.source.')'), {'bufnr': bufnr})
+                \ ft, empty(jobs) ? 'no enabled makers' : join(map(copy(jobs), 'v:val.maker.name'), ', ').' ('.source.')'), {'bufnr': bufnr})
+    if old_config != config
+        call s:debug_log('resetting tick because of config changes')
+        call setbufvar(bufnr, 'neomake_automake_tick', [])
+    elseif old_registration != s:configured_buffers[bufnr]
+        call s:debug_log('resetting tick because of registration changes')
+        call setbufvar(bufnr, 'neomake_automake_tick', [])
+    endif
 
     if a:0
       " Setup autocommands etc (when called manually)?!
       call neomake#configure#automake()
     endif
     return config
+endfunction
+
+function! s:maybe_reconfigure_buffer(bufnr) abort
+    if has_key(s:configured_buffers, a:bufnr)
+        call s:configure_buffer(a:bufnr)
+    endif
 endfunction
 
 function! s:disabled_for_ft(bufnr, ...) abort
@@ -382,8 +417,7 @@ function! s:neomake_automake(event, bufnr) abort
         " register the buffer, and remember that it's automatic.
         call s:configure_buffer(bufnr)
     endif
-    let enabled_makers = s:configured_buffers[bufnr].enabled_makers
-    if empty(enabled_makers)
+    if empty(s:configured_buffers[bufnr].maker_jobs)
         call s:debug_log('no enabled makers', {'bufnr': bufnr})
         return
     endif
@@ -404,7 +438,7 @@ function! s:neomake_automake(event, bufnr) abort
                 \ 'delay': delay,
                 \ 'bufnr': bufnr,
                 \ 'event': a:event,
-                \ 'enabled_makers': enabled_makers,
+                \ 'maker_jobs': s:configured_buffers[bufnr].maker_jobs,
                 \ }
     if event ==# 'BufWinEnter'
         " Ignore context, so that e.g. with vim-stay restoring the view
@@ -427,6 +461,9 @@ function! s:neomake_automake_clean(bufnr) abort
         unlet s:timer_by_bufnr[a:bufnr]
         call timer_stop(timer)
     endif
+    if has_key(s:configured_buffers, a:bufnr)
+        unlet s:configured_buffers[a:bufnr]
+    endif
 endfunction
 
 function! neomake#configure#automake(...) abort
@@ -441,7 +478,7 @@ function! neomake#configure#automake(...) abort
     call filter(s:configured_buffers, 'v:val.custom')
     let s:registered_events = keys(get(get(g:neomake, 'automake', {}), 'events', {}))
     for b in keys(s:configured_buffers)
-        if empty(s:configured_buffers[b].enabled_makers)
+        if empty(s:configured_buffers[b].maker_jobs)
             continue
         endif
         let b_cfg = neomake#config#get('b:automake.events', {})
@@ -463,6 +500,6 @@ function! neomake#configure#automake(...) abort
     augroup END
     augroup neomake_automake_update
         au!
-        autocmd FileType * call s:configure_buffer(expand('<abuf>'))
+        autocmd FileType * call s:maybe_reconfigure_buffer(expand('<abuf>'))
     augroup END
 endfunction
