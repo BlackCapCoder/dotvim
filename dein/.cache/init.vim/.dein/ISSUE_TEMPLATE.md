@@ -1,13 +1,49 @@
-*Requisite minimal reproducible example, formatted as plain text :*
+### Explain the issue
 
-<hr>
+Most issues are related to bugs or problems. In these cases, you should
+include a minimal working example and a minimal vimrc file (see below), as
+well as:
 
-#### Optional: concerning jsx.
-PLEASE PLEASE PLEASE make sure you have properly
-setup and are sourcing this plugin https://github.com/mxw/vim-jsx
+1. What vim version are you using?
+2. Steps to reproduce
+3. Expected behavior
+4. Observed behavior
 
-WE DO NOT support JSX automatically, you need another plugin to add get this
-functionality.
+If your issue is instead a feature request or anything else, please
+consider if minimal examples and vimrc files might still be relevant.
 
-Make sure the bug still exists if you disable all other javascript plugins
-except the one noted above, mxw/vim-jsx
+### Minimal working example
+
+Please provide a minimal working example, e.g.,
+
+```vim
+if l:x == 1
+  call one()
+elseif l:x == 2
+  call two()
+else
+  call three()
+endif
+```
+
+### Minimal vimrc file
+
+Please provide a minimal vimrc file that reproduces the issue. The
+following should often suffice:
+
+```vim
+set nocompatible
+
+" load match-up
+let &rtp  = '~/.vim/bundle/vim-matchup,' . &rtp
+let &rtp .= ',~/.vim/bundle/vim-matchup/after'
+
+" load other plugins, if necessary
+" let &rtp = '~/path/to/other/plugin,' . &rtp
+
+filetype plugin indent on
+syntax enable
+
+" match-up options go here
+```
+

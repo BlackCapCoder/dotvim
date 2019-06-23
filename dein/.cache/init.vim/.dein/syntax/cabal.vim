@@ -1,3 +1,7 @@
+if exists('g:polyglot_disabled') && index(g:polyglot_disabled, 'haskell') != -1
+  finish
+endif
+
 " syntax highlighting for cabal
 "
 " author: raichoo (raichoo@googlemail.com)

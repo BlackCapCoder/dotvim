@@ -163,15 +163,15 @@ let s:default_filetypes = {
       \   },
       \   {
       \    'start':
-      \     '<[^>]\+ style="',
-      \    'end': '"', 'filetype': 'css',
+      \     '<[^>]\+ style=\([''"]\)',
+      \    'end': '\1', 'filetype': 'css',
       \   },
       \ ],
       \ 'vue': [
       \   {
       \    'start':
-      \     '<template\%( [^>]*\)\? lang="pug"\%( [^>]*\)\?>',
-      \    'end': '</template>', 'filetype': 'pug',
+      \     '<template\%( [^>]*\)\? \%(lang="\%(\(\h\w*\)\)"\)\%( [^>]*\)\?>',
+      \    'end': '</template>', 'filetype': '\1',
       \   },
       \   {
       \    'start':
@@ -185,8 +185,18 @@ let s:default_filetypes = {
       \   },
       \   {
       \    'start':
+      \     '<script\%( [^>]*\)\? \%(lang="\%(\(\h\w*\)\)"\)\%( [^>]*\)\?>',
+      \    'end': '</script>', 'filetype': '\1',
+      \   },
+      \   {
+      \    'start':
       \     '<script\%( [^>]*\)\?>',
       \    'end': '</script>', 'filetype': 'javascript',
+      \   },
+      \   {
+      \    'start':
+      \     '<style\%( [^>]*\)\? \%(lang="\%(\(\h\w*\)\)"\)\%( [^>]*\)\?>',
+      \    'end': '</style>', 'filetype': '\1',
       \   },
       \   {
       \    'start':
@@ -349,6 +359,16 @@ let s:default_filetypes = {
       \    'end': '$', 'filetype': 'c',
       \   },
       \ ],
+      \ 'asciidoc': [
+      \   {
+      \    'start' : '^\[source\%(%[^,]*\)\?,\(\h\w*\)\(,.*\)\?\]\s*\n----\s*\n',
+      \    'end' : '^----\s*$', 'filetype' : '\1',
+      \   },
+      \   {
+      \    'start' : '^\[source\%(%[^,]*\)\?,\(\h\w*\)\(,.*\)\?\]\s*\n',
+      \    'end' : '^$', 'filetype' : '\1',
+      \   },
+      \ ],
 \}
 
 
@@ -363,9 +383,9 @@ endfunction
 let s:default_same_filetypes = {
       \ 'cpp': 'c',
       \ 'erb': 'ruby,html,xhtml',
-      \ 'html': 'xhtml,css,stylus,less',
+      \ 'html': 'xhtml',
       \ 'xml': 'xhtml',
-      \ 'xhtml': 'html,xml,css,stylus,less',
+      \ 'xhtml': 'html,xml',
       \ 'htmldjango': 'html',
       \ 'css': 'scss',
       \ 'scss': 'css',
@@ -455,7 +475,7 @@ function! s:replace_submatch(pattern, match_list)
     endif
   endfor
   return pattern
-endfunction 
+endfunction
 
 
 let s:null_pos = [0, 0]
@@ -466,7 +486,18 @@ function! s:search_range(start_pattern, end_pattern)
   let stopline_forward = s:stopline_forward()
   let stopline_back    = s:stopline_back()
 
-  let start = searchpos(a:start_pattern, 'bnceW', stopline_back)
+  let cur_text =
+        \ (mode() ==# 'i' ? (col('.')-1) : col('.')) >= len(getline('.')) ?
+        \      getline('.') :
+        \      matchstr(getline('.'),
+        \         '^.*\%' . (mode() ==# 'i' ? col('.') : col('.') - 1)
+        \         . 'c' . (mode() ==# 'i' ? '' : '.'))
+  let curline_pattern = a:start_pattern . '\ze.\{-}$'
+  if cur_text =~# curline_pattern
+    let start = [line('.'), matchend(cur_text, curline_pattern)]
+  else
+    let start = searchpos(a:start_pattern, 'bnceW', stopline_back)
+  endif
   if start == s:null_pos
     return s:null_range
   endif
@@ -474,7 +505,8 @@ function! s:search_range(start_pattern, end_pattern)
 
   let end_pattern = a:end_pattern
   if end_pattern =~ '\\\d\+'
-    let match_list = matchlist(getline(start[0]), a:start_pattern)
+    let lines = getline(start[0], line('.'))
+    let match_list = matchlist(join(lines, "\n"), a:start_pattern)
     let end_pattern = s:replace_submatch(end_pattern, match_list)
   endif
 
@@ -489,7 +521,7 @@ function! s:search_range(start_pattern, end_pattern)
   endif
   let end_forward[1] -= 1
 
-  if start[1] >= strdisplaywidth(getline(start[0]))
+  if mode() !=# 'i' && start[1] >= strdisplaywidth(getline(start[0]))
     let start[0] += 1
     let start[1] = 1
   endif
@@ -537,13 +569,14 @@ function! s:get_context(filetype, context_filetypes, search_range)
       let context_filetype = context.filetype
       if context.filetype =~ '\\\d\+'
         let stopline_back = s:stopline_back()
-        let line = getline(
-              \ searchpos(context.start, 'nbW', stopline_back)[0]
+        let lines = getline(
+              \ searchpos(context.start, 'nbW', stopline_back)[0],
+              \ line('.')
               \ )
-        let match_list = matchlist(line, context.start)
+        let match_list = matchlist(join(lines, "\n"), context.start)
         let context_filetype = s:replace_submatch(context.filetype, match_list)
       endif
-      return { "filetype" : context_filetype, "range" : range }
+      return {'filetype' : context_filetype, 'range' : range}
     endif
   endfor
 

@@ -6,6 +6,7 @@ function! neoformat#formatters#ruby#rufo() abort
      return {
         \ 'exe': 'rufo',
         \ 'stdin': 1,
+        \ 'valid_exit_codes': [0, 3]
         \ }
 endfunction
 
@@ -19,7 +20,8 @@ endfunction
 function! neoformat#formatters#ruby#rubocop() abort
      return {
         \ 'exe': 'rubocop',
-        \ 'args': ['--auto-correct', '--stdin', '%:p', '2>/dev/null', '|', 'sed "1,/^====================$/d"'],
+        \ 'args': ['--auto-correct', '--stdin', '"%:p"', '2>/dev/null', '|', 'sed "1,/^====================$/d"'],
         \ 'stdin': 1,
+        \ 'stderr': 1
         \ }
 endfunction

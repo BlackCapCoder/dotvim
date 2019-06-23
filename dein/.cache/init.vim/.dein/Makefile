@@ -1,82 +1,91 @@
-VIMDIR=$(DESTDIR)/usr/share/vim
-ADDONS=${VIMDIR}/addons
-REGISTRY=${VIMDIR}/registry
+PLUGIN = orgmode
+PREFIX = /usr/local
+VIMDIR = $(PREFIX)/share/vim
 
-all:
-
-install:
-	mkdir -pv ${ADDONS}/ftdetect
-	cp -v ftdetect/markdown.vim ${ADDONS}/ftdetect/markdown.vim
-	mkdir -pv ${ADDONS}/ftplugin
-	cp -v ftplugin/markdown.vim ${ADDONS}/ftplugin/markdown.vim
-	mkdir -pv ${ADDONS}/syntax
-	cp -v syntax/markdown.vim ${ADDONS}/syntax/markdown.vim
-	mkdir -pv ${ADDONS}/after/ftplugin
-	cp -v after/ftplugin/markdown.vim ${ADDONS}/after/ftplugin/markdown.vim
-	mkdir -pv ${ADDONS}/indent
-	cp -v indent/markdown.vim ${ADDONS}/indent/markdown.vim
-	mkdir -pv ${ADDONS}/doc
-	cp -v doc/vim-markdown.txt ${ADDONS}/doc/vim-markdown.txt
-	mkdir -pv ${REGISTRY}
-	cp -v registry/markdown.yaml ${REGISTRY}/markdown.yaml
-
-test: build/tabular build/vim-toml build/vim-json build/vader.vim
-	test/run-tests.sh
-.PHONY: test
-
-update: build/tabular build/vim-toml build/vim-json build/vader.vim
-	cd build/tabular && git pull
-	cd build/vim-toml && git pull
-	cd build/vim-json && git pull
-	cd build/vader.vim && git pull
-.PHONY: update
-
-build/tabular: | build
-	git clone https://github.com/godlygeek/tabular build/tabular
-
-build/vim-toml: | build
-	git clone https://github.com/cespare/vim-toml build/vim-toml
-
-build/vim-json: | build
-	git clone https://github.com/elzr/vim-json build/vim-json
-
-build/vader.vim: | build
-	git clone https://github.com/junegunn/vader.vim build/vader.vim
+all: build
 
 build:
-	mkdir build
 
-doc: build/html2vimdoc build/vim-tools
-	sed -e '/^\[!\[Build Status\]/d' \
-	    -e '/^1\. \[/d' README.md > doc/tmp.md # remove table of contents
-	build/html2vimdoc/bin/python build/vim-tools/html2vimdoc.py -f vim-markdown \
-		doc/tmp.md | \
-		sed -E -e "s/[[:space:]]*$$//" -e "# remove trailing spaces" \
-		    -e "/^.{79,}\|$$/ {" -e "# wrap table of contents over 79" \
-		    -e "h" -e "# save the matched line to the hold space" \
-		    -e "s/^(.*) (\|[^|]*\|)$$/\1/" -e "# make content title" \
-		    -e "p" -e "# print title" \
-		    -e "g" -e "# restore the matched line" \
-		    -e "s/^.* (\|[^|]*\|)$$/ \1/" -e "# make link" \
-		    -e ":c" -e "s/^(.{1,78})$$/ \1/" -e "tc" -e "# align right" \
-		    -e "}" \
-		    -e "/^- '[^']*':( |$$)/ {" \
-		    -e "h" -e "# save the matched line to the hold space" \
-		    -e "s/^- '([^']{3,})':.*/ \*\1\*/" -e "# make command reference" \
-		    -e "s/^- '([^']{1,2})':.*/ \*vim-markdown-\1\*/" -e "# short command" \
-		    -e ":a" -e "s/^(.{1,78})$$/ \1/" -e "ta" -e "# align right" \
-		    -e "G" -e "# append the matched line after the command reference" \
-		    -e "}" > doc/vim-markdown.txt && rm -f doc/tmp.md
+# install plugin at destination
+install: doc indent ftdetect ftplugin syntax
+	for i in doc indent ftdetect ftplugin syntax; do \
+		find $$i -type f -name \*.txt -o -type f -name \*.cnf -o -type f -name \*.py -o -type f -name \*.vim | while read f; do \
+			install -m 0755 -d $(DESTDIR)$(VIMDIR)/$$(dirname "$$f"); \
+			install -m 0644 $$f $(DESTDIR)$(VIMDIR)/$$f; \
+		done; \
+	done
 
-.PHONY: doc
+# cleanup
+clean: documentation
+	@find . -name \*.pyc -o -name \*.py,cover -exec rm {} \;
+	@rm -rf ${PLUGIN}.vmb ${PLUGIN}.vmb.gz tmp files
+	cd $< && $(MAKE) $@
 
-# Prerequire Python and virtualenv.
-# $ sudo pip install virtualenv
-# Create the virtual environment.
-# Install the dependencies.
-build/html2vimdoc: | build
-	virtualenv build/html2vimdoc
-	build/html2vimdoc/bin/pip install beautifulsoup coloredlogs==4.0 markdown
+# generate the vim ball package
+${PLUGIN}.vmb: check build_vmb.vim clean
+	$(MAKE) DESTDIR=$(PWD)/tmp VIMDIR= install
+	find tmp -type f  | sed -e 's/^tmp\///' > files
+	cp build_vmb.vim tmp
+	cd tmp && vim --cmd 'let g:plugin_name="${PLUGIN}"' -s build_vmb.vim
+	[ -e tmp/${PLUGIN}.vba ] && mv tmp/${PLUGIN}.vba tmp/$@ || true
+	mv tmp/$@ .
 
-build/vim-tools: | build
-	git clone https://github.com/xolox/vim-tools.git build/vim-tools
+${PLUGIN}.vmb.gz: ${PLUGIN}.vmb
+	@rm -f ${PLUGIN}.vmb.gz
+	gzip $<
+
+vmb: ${PLUGIN}.vmb
+
+vmb.gz: ${PLUGIN}.vmb.gz
+
+${PLUGIN}.vba: ${PLUGIN}.vmb
+	mv $< $@
+
+${PLUGIN}.vba.gz: ${PLUGIN}.vba
+	@rm -f ${PLUGIN}.vba.gz
+	gzip $<
+
+vba: ${PLUGIN}.vba
+
+vba.gz: ${PLUGIN}.vba.gz
+
+# run unit tests
+test: check
+
+check: tests/run_tests.py
+	cd tests && python2 run_tests.py
+
+# generate documentation
+docs: documentation
+	cd $< && $(MAKE)
+
+# generate a test coverage report for all python files
+coverage:
+	@echo ">>> Coverage depends on the package python-nose and python-coverage, make sure they are installed!"
+	cd tests && nosetests2 --with-coverage --cover-html .
+
+# run a static code checker
+lint:
+	@echo ">>> Lint depends on the package pylint make sure it's installed!"
+	pylint --rcfile .pylintrc --disable=C0301,C0103,C0111,C0322,C0323,C0324,W0703,W0612,W0603 orgmode
+
+lintall:
+	@echo ">>> Lint depends on the package pylint make sure it's installed!"
+	pylint --rcfile .pylintrc orgmode
+
+# install vim-orgmode in the .vim/bundle directory for test purposes
+VIMPLUGINDIR = $(HOME)/.vim/bundle/orgmode
+
+installvmb: ${PLUGIN}.vmb install_vmb.vim
+	rm -rvf ${VIMPLUGINDIR}
+	mkdir -p "${VIMPLUGINDIR}"
+	vim --cmd "let g:installdir='${VIMPLUGINDIR}'" -s install_vmb.vim $<
+	@echo "Plugin was installed in ${VIMPLUGINDIR}. Make sure you are using a plugin loader like pathegon, otherwise the ${PLUGIN} might not work properly."
+
+installvba: ${PLUGIN}.vba install_vba.vim
+	rm -rvf ${VIMPLUGINDIR}
+	mkdir -p "${VIMPLUGINDIR}"
+	vim --cmd "let g:installdir='${VIMPLUGINDIR}'" -s install_vba.vim $<
+	@echo "Plugin was installed in ${VIMPLUGINDIR}. Make sure you are using a plugin loader like pathegon, otherwise the ${PLUGIN} might not work properly."
+
+.PHONY: all build test check install clean vmb vmb.gz docs installvmb

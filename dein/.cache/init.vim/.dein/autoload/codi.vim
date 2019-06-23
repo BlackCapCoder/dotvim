@@ -148,6 +148,7 @@ augroup CODI
         \ scrollbind
         \ | noremap <buffer> <silent> q <esc>:q<cr>
         \ | silent! setlocal cursorbind
+        \ | silent! setlocal signcolumn=no
   " Clean up when codi is closed
   au BufWinLeave * if exists('b:codi_target_bufnr')
         \| exe 'keepjumps keepalt buf! '.b:codi_target_bufnr
@@ -183,6 +184,22 @@ function! s:user_au(au)
   if exists('#User#'.a:au)
     exe 'do <nomodeline> User '.a:au
   endif
+endfunction
+
+" If percent / float width, calculate based on buf width
+" while respecting |winwidth|
+" Else, return absolute width as given
+function! s:pane_width()
+  let width = s:get_opt('width')
+
+  if type(width) == type(0)
+    return width
+  endif
+
+  let buf_width  = winwidth(bufwinnr('%'))
+  let pane_width = float2nr(round(buf_width * (width > 0.0 ? width : 0.0) / 100))
+
+  return max([&winwidth, min([buf_width - &winwidth, pane_width])])
 endfunction
 
 " Gets an interpreter option, and if not available, global option.
@@ -701,7 +718,7 @@ function! s:codi_spawn(filetype)
   " Spawn codi
   exe 'keepjumps keepalt '
         \.(s:get_opt('rightsplit') ? 'rightbelow' : 'leftabove').' '
-        \.(s:get_codi('width', s:get_opt('width'))).'vnew'
+        \.(s:get_codi('width', s:pane_width())).'vnew'
   setlocal filetype=codi
   exe 'setlocal syntax='.a:filetype
   let b:codi_target_bufnr = bufnr

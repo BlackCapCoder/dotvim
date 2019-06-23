@@ -1,3 +1,7 @@
+if exists('g:polyglot_disabled') && index(g:polyglot_disabled, 'idris') != -1
+  finish
+endif
+
 " indentation for idris (idris-lang.org)
 "
 " Based on haskell indentation by motemen <motemen@gmail.com>

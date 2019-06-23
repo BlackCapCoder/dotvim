@@ -89,6 +89,14 @@ function! s:rp_purs(buf)
   return b . "\n"
 endfunction
 
+" Haskell rephrasers
+function! s:rp_hs(buf)
+    let printer = 'let codiPrettyPrint = putStrLn . take 50 . show'
+    let setprint = ':set -interactive-print codiPrettyPrint'
+    let prompt1 = ':set prompt "Codi Prompt"'
+    return printer."\n".setprint."\n".prompt1."\n".a:buf
+endfunction
+
 " Php rephrasers
 function! s:rp_php(buf)
   if a:buf[0:4] ==# '<?php'
@@ -123,8 +131,9 @@ let s:codi_default_interpreters = {
           \ 'prompt': '^coffee> ',
           \ },
       \ 'haskell': {
-          \ 'bin': 'ghci',
-          \ 'prompt': '^Prelude[^>|]*[>|] ',
+          \ 'bin': ['ghci', '-ignore-dot-ghci'],
+          \ 'prompt': '^Codi Prompt',
+          \ 'rephrase': function('s:rp_hs'),
           \ },
       \ 'purescript': {
           \ 'bin': ['pulp', 'psci'],
@@ -162,16 +171,24 @@ let s:codi_default_interpreters = {
           \ 'bin': ['lua'],
           \ 'prompt': '^\(>\|>>\) ',
           \ },
-       \ 'cpp': {
-          \ 'bin': 'cling',
-          \ 'prompt': '^\[cling\]\$ ?\?',
-          \ 'quitcmd': '.q',
-          \ },
-       \ 'julia': {
-          \ 'bin': ['julia', '-qi', '--color=no', '--history-file=no'],
-          \ 'prompt': '\(julia> \)',
-          \ 'preprocess': function('s:pp_remove_esc'),
-          \ },
+      \ 'cpp': {
+         \ 'bin': 'cling',
+         \ 'prompt': '^\[cling\]\$ ?\?',
+         \ 'quitcmd': '.q',
+         \ },
+      \ 'julia': {
+         \ 'bin': ['julia', '-qi', '--color=no', '--history-file=no'],
+         \ 'prompt': '\(julia> \)',
+         \ 'preprocess': function('s:pp_remove_esc'),
+         \ },
+      \ 'elm': {
+         \ 'bin': ['elm', 'repl'],
+         \ 'prompt': '^> '
+         \ },
+      \ 'elixir': {
+         \ 'bin': ['iex'],
+         \ 'prompt': '^iex(\d\+). '
+         \ },
       \ }
 function! codi#load#interpreters()
   return s:deep_extend(s:codi_default_interpreters, g:codi#interpreters)

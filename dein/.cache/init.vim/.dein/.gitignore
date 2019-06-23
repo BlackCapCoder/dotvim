@@ -1,5 +1,3 @@
-doc/tags
-vimproc
-tinytest
-verbose.log
-stdout.log
+*.pyc
+/autoload/__pycache__/*
+

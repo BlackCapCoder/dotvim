@@ -45,13 +45,12 @@ snippet class
 	class ${1:Class} a where
 		${0}
 snippet module
-	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` (
-	) where
-	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = undefined" : ""`
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` where
+	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = return ()" : ""`
 
 snippet main
 	main :: IO ()
-	main = ${0:undefined}
+	main = ${0:return ()}
 snippet const
 	${1:name} :: ${2:a}
 	$1 = ${0:undefined}
@@ -143,3 +142,5 @@ snippet sb
 snippet doc
 	{-| ${0}
 	-}
+snippet ccall
+	foreign import ccall safe "${1}" $1 :: $0

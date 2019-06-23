@@ -245,7 +245,15 @@ g:codi#autocmd
 
                                                                 *g:codi#width*
 g:codi#width
-             The width of the Codi split.
+             The width of the Codi split, either a |Number| or a |Float|.
+
+             When a |Number| is supplied, it will be interpreted as the
+             absolute width in columns to use.
+
+             When a |Float| is supplied, it will be treated as a percentage of
+             the current buffer width. This setting will then also respect
+             the |winwidth| builtin which means that each pane will be at
+             least |winwidth| columns wide.
 
              Default value is 40.
 
@@ -356,6 +364,14 @@ cpp~
 bin: cling
 maintainer: @AlesTsurko
 
+elm~
+bin: elm
+maintainer: @metakirby5
+
+elixir~
+bin: iex
+maintainer: @megalithic
+
 haskell~
 bin: ghci
 maintainer: @metakirby5
@@ -410,7 +426,7 @@ program; it supports nothing more than what the underlying bin supports.
 This is why Haskell language pragmas don't work, PureScript only works
 inside a project folder, and OCaml statements must end with ;;. Also, in
 most whitespace-sensitive languages, an empty line represents the end of a
-definition. 
+definition.
 
 OUTPUT SPECIFICATION                           *codi-interpreters-output-spec*
 

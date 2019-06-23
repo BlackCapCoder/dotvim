@@ -23,40 +23,70 @@
 
 
 " ================ Ranger =======================
+if exists('g:ranger_choice_file')
+  if empty(glob(g:ranger_choice_file))
+    let s:choice_file_path = g:ranger_choice_file
+  else
+    echom "Message from *Ranger.vim* :"
+    echom "You've set the g:ranger_choice_file variable."
+    echom "Please use the path for a file that does not already exist."
+    echom "Using /tmp/chosenfile for now..."
+  endif
+endif
+
+if exists('g:ranger_command_override')
+  let s:ranger_command = g:ranger_command_override
+else
+  let s:ranger_command = 'ranger'
+endif
+
+if !exists('s:choice_file_path')
+  let s:choice_file_path = '/tmp/chosenfile'
+endif
+
 if has('nvim')
   function! OpenRangerIn(path, edit_cmd)
     let currentPath = expand(a:path)
     let rangerCallback = { 'name': 'ranger', 'edit_cmd': a:edit_cmd }
-    function! rangerCallback.on_exit(id, code, _event)
-      silent! Bclose!
+    function! rangerCallback.on_exit(job_id, code, event)
+      if a:code == 0
+        silent! Bclose!
+      endif
       try
-        if filereadable('/tmp/chosenfile')
-          exec system('sed -ie "s/ /\\\ /g" /tmp/chosenfile')
-          exec 'argadd ' . system('cat /tmp/chosenfile | tr "\\n" " "')
-          exec self.edit_cmd . system('head -n1 /tmp/chosenfile')
-          call system('rm /tmp/chosenfile')
+        if filereadable(s:choice_file_path)
+          for f in readfile(s:choice_file_path)
+            exec self.edit_cmd . f
+          endfor
+          call delete(s:choice_file_path)
         endif
       endtry
     endfunction
     enew
     if isdirectory(currentPath)
-      call termopen('ranger --choosefiles=/tmp/chosenfile "' . currentPath . '"', rangerCallback)
+      call termopen(s:ranger_command . ' --choosefiles=' . s:choice_file_path . ' "' . currentPath . '"', rangerCallback)
     else
-      call termopen('ranger --choosefiles=/tmp/chosenfile --selectfile="' . currentPath . '"', rangerCallback)
+      call termopen(s:ranger_command . ' --choosefiles=' . s:choice_file_path . ' --selectfile="' . currentPath . '"', rangerCallback)
     endif
     startinsert
   endfunction
 else
   function! OpenRangerIn(path, edit_cmd)
     let currentPath = expand(a:path)
-    exec 'silent !ranger --choosefiles=/tmp/chosenfile --selectfile="' . currentPath . '"'
-    if filereadable('/tmp/chosenfile')
-      exec system('sed -ie "s/ /\\\ /g" /tmp/chosenfile')
-      exec 'argadd ' . system('cat /tmp/chosenfile | tr "\\n" " "')
-      exec a:edit_cmd . system('head -n1 /tmp/chosenfile')
-      call system('rm /tmp/chosenfile')
+    if isdirectory(currentPath)
+      silent exec '!' . s:ranger_command . ' --choosefiles=' . s:choice_file_path . ' "' . currentPath . '"'
+    else
+      silent exec '!' . s:ranger_command . ' --choosefiles=' . s:choice_file_path . ' --selectfile="' . currentPath . '"'
+    endif
+    if filereadable(s:choice_file_path)
+      for f in readfile(s:choice_file_path)
+        exec a:edit_cmd . f
+      endfor
+      call delete(s:choice_file_path)
     endif
     redraw!
+    " reset the filetype to fix the issue that happens
+    " when opening ranger on VimEnter (with `vim .`)
+    filetype detect
   endfun
 endif
 
@@ -85,21 +115,20 @@ endfunction
 
 " Open Ranger in the directory passed by argument
 function! OpenRangerOnVimLoadDir(argv_path)
-  " Open Ranger
-	let path = expand(a:argv_path)
-  call OpenRangerIn(path, "edit")
+  let path = expand(a:argv_path)
 
-  " Delete the empty buffer created by vim
-  exec "bp"
-  exec "bd!"
+  " Delete empty buffer created by vim
+  Bclose!
+
+  " Open Ranger
+  call OpenRangerIn(path, 'edit')
 endfunction
 
 " To open ranger when vim load a directory
 if exists('g:ranger_replace_netrw') && g:ranger_replace_netrw
   augroup ReplaceNetrwByRangerVim
     autocmd VimEnter * silent! autocmd! FileExplorer
-    autocmd StdinReadPre * let s:std_in=1
-    autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | call OpenRangerOnVimLoadDir(argv()[0]) | endif
+    autocmd BufEnter * if isdirectory(expand("%")) | call OpenRangerOnVimLoadDir("%") | endif
   augroup END
 endif
 

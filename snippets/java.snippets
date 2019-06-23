@@ -39,13 +39,21 @@ snippet j.u
 ##
 ## Class
 snippet cl
-	class ${1:`vim_snippets#Filename("$1", "untitled")`} ${0}
+	class ${1:`substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`} {
+		${0}
+	}
 snippet pcl
-	public class ${1:`vim_snippets#Filename("$1", "untitled")`} ${0}
+	public class ${1:`substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`} {
+		${0}
+	}
 snippet in
-	interface ${1:`vim_snippets#Filename("$1", "untitled")`} ${2:extends Parent}
+	interface ${1:`substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`} ${2:extends Parent} {
+		${0}
+	}
 snippet tc
-	public class ${1:`vim_snippets#Filename("$1")`} extends ${0:TestCase}
+	public class ${1:`substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`} extends ${0:TestCase}
+		${2}
+	}
 ##
 ## Class Enhancements
 snippet ext

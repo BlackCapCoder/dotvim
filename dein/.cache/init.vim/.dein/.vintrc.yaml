@@ -1,3 +1,13 @@
+cmdargs:
+    severity: error
+
+env:
+    neovim: true
+
 policies:
-  ProhibitImplicitScopeVariable:
-    enabled: false
+    ProhibitSetNoCompatible:
+        enabled: false
+    ProhibitImplicitScopeVariable:
+        enabled: false
+    ProhibitEqualTildeOperator:
+        enabled: false

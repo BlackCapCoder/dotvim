@@ -1,3 +1,7 @@
+if exists('g:polyglot_disabled') && index(g:polyglot_disabled, 'idris') != -1
+  finish
+endif
+
 " syntax highlighting for idris (idris-lang.org)
 "
 " Heavily modified version of the haskell syntax

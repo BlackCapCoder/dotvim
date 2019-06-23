@@ -1,3 +1,7 @@
+if exists('g:polyglot_disabled') && index(g:polyglot_disabled, 'idris') != -1
+  finish
+endif
+
 " Vim syntax file
 " Language:    Literate Idris
 " Maintainer:  Idris Hackers (https://github.com/idris-hackers/idris-vim)

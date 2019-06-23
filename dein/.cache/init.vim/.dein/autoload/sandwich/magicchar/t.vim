@@ -9,15 +9,18 @@ let s:type_list = type([])
 
 function! sandwich#magicchar#t#tag() abort "{{{
   call operator#sandwich#show()
-  echohl MoreMsg
-  let old_imsearch = &l:imsearch
-  let &l:imsearch = 0
-  let tag = input('Input tag: ')
-  let &l:imsearch = old_imsearch
-  echohl NONE
-  " flash prompt
-  echo ''
-  call operator#sandwich#quench()
+  try
+    echohl MoreMsg
+    let old_imsearch = &l:imsearch
+    let &l:imsearch = 0
+    let tag = input('Input tag: ')
+    let &l:imsearch = old_imsearch
+    " flash prompt
+    echo ''
+  finally
+    echohl NONE
+    call operator#sandwich#quench()
+  endtry
   if tag ==# ''
     throw 'OperatorSandwichCancel'
   endif
@@ -27,15 +30,18 @@ endfunction
 "}}}
 function! sandwich#magicchar#t#tagname() abort "{{{
   call operator#sandwich#show()
-  echohl MoreMsg
-  let old_imsearch = &l:imsearch
-  let &l:imsearch = 0
-  let tagname = input('Input tag name: ')
-  let &l:imsearch = old_imsearch
-  echohl NONE
-  " flash prompt
-  echo ''
-  call operator#sandwich#quench()
+  try
+    echohl MoreMsg
+    let old_imsearch = &l:imsearch
+    let &l:imsearch = 0
+    let tagname = input('Input tag name: ')
+    let &l:imsearch = old_imsearch
+    " flash prompt
+    echo ''
+  finally
+    echohl NONE
+    call operator#sandwich#quench()
+  endtry
   if tagname ==# ''
     throw 'OperatorSandwichCancel'
   endif
@@ -299,11 +305,7 @@ function! s:prototype(kind) abort "{{{
   let view = winsaveview()
   let visualhead = getpos("'<")
   let visualtail = getpos("'>")
-  try
-    execute printf('normal! v%dat', v:count1)
-  catch /^Vim\%((\a\+)\)\=:E\%(33\|55\)/
-    return
-  endtry
+  execute printf('silent! normal! v%dat', v:count1)
   execute "normal! \<Esc>"
   if getpos("'<") != getpos("'>")
     normal! gv
@@ -332,10 +334,11 @@ function! s:textobj(a_or_i) abort "{{{
   if head != s:null_coord
     let tagname = matchstr(getline(head[0])[head[1]-1 :], '^<\zs\a[^[:blank:]>/]*')
     if search(printf('</%s>', s:escape(tagname)), 'cn', 0, 50)
+      " add :silent! to suppress errorbell
       if a:a_or_i ==# 'i'
-        normal! vit
+        silent! normal! vit
       else
-        normal! vat
+        silent! normal! vat
       endif
     endif
   endif
