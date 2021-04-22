@@ -1,284 +1,25 @@
-"dein Scripts-----------------------------
 if &compatible
   set nocompatible " Be iMproved
 endif
 
 " Required:
-set runtimepath+=/home/blackcap/.config/nvim/dein/./repos/github.com/Shougo/dein.vim
-
-" Required:
-if dein#load_state('/home/blackcap/.config/nvim/dein/.')
-  call dein#begin('/home/blackcap/.config/nvim/dein/.')
-
-  " Let dein manage dein
-  " Required:
-  call dein#add('/home/blackcap/.config/nvim/dein/./repos/github.com/Shougo/dein.vim')
-
-  " -- Auto completion
-  " ncm2:
-  " call dein#add('ncm2/ncm2')
-  " call dein#add('roxma/nvim-yarp') " Dependency
-  " call dein#add('ncm2/ncm2-pyclang')
-  " call dein#add('ncm2/ncm2-ultisnips')
-  " call dein#add('ncm2/ncm2-cssomni')
-  " call dein#add('ncm2/ncm2-tern', {'build' : 'npm install'})
-  " call dein#add('ncm2/ncm2-html-subscope')
-  " call dein#add('ncm2/ncm2-markdown-subscope')
-  " call dein#add('ncm2/ncm2-vim')
-  " call dein#add('Shougo/neco-vim') " dependency
-  " call dein#add('artur-shaik/vim-javacomplete2')
-  " call dein#add('OmniSharp/omnisharp-vim')
-  " call dein#add('ncm2/ncm2-racer')
-  " coc:
-  call dein#add('https://github.com/neoclide/coc.nvim')
+" set runtimepath+=/home/blackcap/.config/nvim/dein/./repos/github.com/Shougo/dein.vim
+set runtimepath+=/home/blackcap/.cache/dein/repos/github.com/Shougo/dein.vim
 
 
-  " -- Tags
-  call dein#add('junegunn/vim-slash')
-  call dein#add('majutsushi/tagbar')
-  " call dein#add('xolox/vim-easytags')
+let g:polyglot_disabled = ['autoindent']
 
-  " -- Snippets
-  call dein#add('SirVer/ultisnips')
-  " call dein#add('honza/vim-snippets')
-  call dein#add('MarcWeber/vim-addon-mw-utils')
-  " call dein#add('autozimu/LanguageClient-neovim', {'build': 'bash install.sh', 'branch': 'next'})
-  call dein#add('tomtom/tlib_vim')
+runtime after/plugins.vim
 
-  call dein#add('floobits/floobits-neovim')
-  call dein#add('FrigoEU/psc-ide-vim')
-  call dein#add('purescript-contrib/purescript-vim')
-  call dein#add('jceb/vim-orgmode')
-  call dein#add('yuratomo/w3m.vim')
-  call dein#add('https://github.com/unblevable/quick-scope')
+" ----------
 
-  " -- Context awareness
-  call dein#add('Shougo/context_filetype.vim')
-
-  " -- Utils
-  call dein#add('https://github.com/chrisbra/NrrwRgn')
-  call dein#add('Shougo/vimproc.vim', {'build' : 'make'})
-  call dein#add('alvan/vim-closetag')
-  call dein#add('cloudhead/neovim-fuzzy')
-  call dein#add('ctrlpvim/ctrlp.vim')
-  call dein#add('euclio/vim-markdown-composer')
-  call dein#add('plasticboy/vim-markdown')
-  call dein#add('plasticboy/vim-markdown')
-  call dein#add('https://github.com/vim-scripts/SyntaxRange')
-  call dein#add('flazz/vim-colorschemes')
-  call dein#add('jiangmiao/auto-pairs')
-  call dein#add('francoiscabrol/ranger.vim')
-  call dein#add('junegunn/vim-easy-align')
-  call dein#add('idris-hackers/idris-vim')
-  call dein#add('junegunn/goyo.vim')
-  call dein#add('metakirby5/codi.vim')
-  call dein#add('munshkr/vim-tidal')
-  call dein#add('rbgrouleff/bclose.vim')
-  call dein#add('sjl/gundo.vim')
-  " call dein#add('terryma/vim-multiple-cursors')
-  call dein#add('https://github.com/mg979/vim-visual-multi')
-  call dein#add('tomtom/tcomment_vim')
-  call dein#add('machakann/vim-sandwich')
-  call dein#add('tweekmonster/braceless.vim')
-  call dein#add('jaxbot/browserlink.vim')
-  " call dein#add('BlackCapCoder/scrimba-vim')
-  call dein#add('machakann/vim-highlightedyank')
-  call dein#add('https://github.com/kana/vim-arpeggio')
-
-  call dein#add('michalliu/jsruntime.vim')
-  call dein#add('michalliu/jsoncodecs.vim')
-  call dein#add('michalliu/sourcebeautify.vim')
-  call dein#add('xolox/vim-colorscheme-switcher')
-  call dein#add('HerringtonDarkholme/yats.vim')
-  call dein#add('Rip-Rip/clang_complete')
-  call dein#add('tpope/vim-dispatch')
-  " call dein#add('rhysd/clever-f.vim')
-  call dein#add('junegunn/vim-emoji')
-  call dein#add('vim-scripts/anwolib')
-  call dein#add('tpope/vim-fugitive')
-  call dein#add('xolox/vim-misc')
-  call dein#add('xolox/vim-pyref')
-  call dein#add('keith/swift.vim')
-  call dein#add('ervandew/archive')
-  call dein#add('dhruvasagar/vim-table-mode')
-  call dein#add('tpope/vim-unimpaired')
-  call dein#add('tpope/vim-repeat')
-  " call dein#add('starcraftman/vim-eclim')
-  " call dein#add('w0rp/ale')
-  call dein#add ('sbdchd/neoformat')
-  call dein#add('airblade/vim-gitgutter')
-  call dein#add('matze/vim-move')
-  call dein#add('markonm/traces.vim')
-  call dein#add('tpope/vim-eunuch')
-  call dein#add('tommcdo/vim-exchange')
-  call dein#add('https://github.com/AndrewRadev/switch.vim')
-  call dein#add('https://github.com/osyo-manga/vim-brightest')
-  call dein#add('https://github.com/thinca/vim-quickrun')
-
-  " call dein#add('https://github.com/tpope/vim-vinegar')
-  call dein#add('https://github.com/andymass/vim-matchup')
-  call dein#add('https://github.com/hauleth/sad.vim')
-  call dein#add('https://github.com/wellle/targets.vim')
-  call dein#add('https://github.com/yuttie/comfortable-motion.vim')
-  call dein#add('https://github.com/skywind3000/vim-keysound')
-  call dein#add('junegunn/fzf')
-  call dein#add('rhysd/vim-clang-format')
-  call dein#add('https://github.com/sheerun/vim-polyglot')
-  call dein#add('https://github.com/kshenoy/vim-signature')
-  call dein#add('https://github.com/nelstrom/vim-visual-star-search')
-  call dein#add('https://github.com/machakann/vim-swap')
-  call dein#add('https://github.com/tpope/vim-speeddating')
-  call dein#add('https://github.com/tpope/vim-endwise')
-  " call dein#add('https://github.com/haya14busa/is.vim')
-  call dein#add('https://github.com/haya14busa/incsearch.vim')
-
-
-  " --- Text Objects
-  call dein#add('michaeljsmith/vim-indent-object')
-  call dein#add('kana/vim-textobj-entire')
-  call dein#add('glts/vim-textobj-comment')
-  call dein#add('https://github.com/kana/vim-textobj-user')
-  call dein#add('https://github.com/coderifous/textobj-word-column.vim')
-  call dein#add('https://github.com/gibiansky/vim-textobj-haskell')
-
-  call dein#add('https://github.com/terryma/vim-expand-region')
-  call dein#add('https://github.com/ericcurtin/CurtineIncSw.vim')
-  " call dein#add('https://github.com/maxbrunsfeld/vim-yankstack')
-  call dein#add('https://github.com/andrewradev/splitjoin.vim')
-  call dein#add('https://github.com/anschnapp/move-less')
-
-
-  " ======= Language specific
-  " call dein#add('enomsg/vim-haskellConcealPlus',
-  "     \ { 'for': 'haskell' })
-  " call dein#add('BlackCapCoder/haskellConceal',
-  "     \ { 'for': 'haskell' })
-
-  " call dein#add('itchyny/vim-haskell-indent',
-  "     \ { 'for': 'haskell' })
-
-  " call dein#add('bitc/vim-hdevtools',
-  "     \ { 'for': 'haskell' })
-
-  " call dein#add('autozimu/LanguageClient-neovim', {
-  "     \ 'rev': 'next',
-  "     \ 'build': 'bash install.sh',
-  "     \ })
-
-
-  call dein#add('fatih/vim-go',
-      \{'on_ft': ['go']})
-
-  call dein#add('zchee/deoplete-go',
-      \{'on_ft': ['go'], 'build': 'make'})
-
-  call dein#add('alvan/vim-php-manual',
-      \{'on_ft': ['php']})
-
-  call dein#add('2072/PHP-Indenting-for-VIm',
-      \{'on_ft': ['php']})
-
-  call dein#add('thaerkh/vim-indentguides',
-      \{'on_ft': ['go', 'html', 'css', 'sass', 'js', 'php', 'py', 'c', 'cpp', 'h', 'hpp', 'rs', 'java', 'cs']})
-
-  call dein#add('rust-lang/rust.vim',
-      \{'for': 'rust'})
-
-  call dein#add('koturn/vim-brainfuck',
-      \{'for': 'brainfuck'})
-
-  " Required:
-  call dein#end()
-  call dein#save_state()
-endif
-
-" Required:
-filetype plugin indent on
-syntax enable
-
-" If you want to install not installed plugins on startup.
-if dein#check_install()
-  call dein#install()
-endif
-"End dein Scripts-------------------------
-
-
-runtime macros/matchit.vim
-
-
-" I don't like themes with backgrounds
-colorscheme molokai-transparent
-hi TabLine ctermfg=white ctermbg=black
-hi TabLineFill ctermfg=black
-
-" I change the terminal colors based on the system background image
-hi Type ctermfg=blue
-hi Number ctermfg=magenta
-hi Operator ctermfg=red
-hi Keyword ctermfg=red
-hi Structure ctermfg=red
-hi String ctermfg=green
-hi preProc ctermfg=green
-hi SpellCap ctermbg=black
-
-hi PmenuSel ctermbg=0 ctermfg=1
-hi MatchParen ctermfg=green ctermbg=none
-hi clear SignColumn
-hi HighlightedyankRegion ctermbg=black
-hi Conceal ctermbg=none ctermfg=6
-hi Noise ctermfg=237
-" match Noise /[(){}\[\]]/
-
-
-let g:gitgutter_map_keys = 0
-
-set nofixendofline
-set autoread
-set number
-set numberwidth=5
-set tabstop=2
-set shiftwidth=2
-set shiftround
-set expandtab
-set list listchars=tab:»·,trail:·,nbsp:·
-" set nojoinspaces
-set foldmethod=manual
-" nvim has default locations for these
-" set directory^=$HOME/.vim/tmp//
-" set undodir=~/.vim/undo/
-set ttyfast
-set lazyredraw
-set undofile
-set undolevels=1000
-set undoreload=10000
-set history=50
-set autoindent
-set smartindent
-set laststatus=1
-set backspace=2   " Backspace deletes like most programs in insert mode
-set backspace=indent,eol,start
-set nobackup
-set nowritebackup
-set noswapfile
-set noshowcmd
-set incsearch
-set autowrite " Automatically :write before running commands
-set linebreak
-set ic
-set relativenumber
-set splitbelow
-set fcs=eob:\ 
-set dictionary+=/usr/share/dict/words
-set wildmode=longest:full,list:full
-set shortmess+=c
-set noshowmode
-set scrolloff=4
-set noautochdir
-set conceallevel=1
 
 if v:version > 703 || v:version == 703 && has('patch541')
   set formatoptions+=j
 endif
+
+
+let g:gitgutter_map_keys = 0
 
 " let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 let g:qs_max_chars=80
@@ -288,7 +29,7 @@ let g:neoterm_position            = 'horizontal'
 let g:neoterm_automap_keys        = ',tt'
 let g:closetag_filenames          = "*.html,*.xhtml,*.phtml,*.xml,*.php"
 let g:ctrlp_map                   = ''
-let g:ranger_map_keys             = 0
+" let g:ranger_map_keys             = 0
 let mapleader                     = " "
 let maplocalleader                = ','
 let g:maplocalleader              = ','
@@ -315,7 +56,7 @@ let g:codi#interpreters = {
         \ },
       \ }
 
-let g:loaded_matchparen = 1 " Disable parenteces matching for performance
+" let g:loaded_matchparen = 1 " Disable parenteces matching for performance
 let g:necoghc_use_stack = 1
 let g:idris_conceal = 1
 let g:tagbar_type_haskell = {
@@ -374,228 +115,40 @@ let g:UltiSnipsRemoveSelectModeMappings = 0
 let g:coc_snippet_next = '<TAB>'
 let g:coc_snippet_prev = '<S-TAB>'
 
+
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-y>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
 
-inoremap <cr> <C-g>u<CR>
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-function! WrapLNext(direction)
-  if a:direction == "up"
-    try
-      lprevious
-    catch /^Vim\%((\a\+)\)\=:E553/
-      llast
-    endtry
-  elseif a:direction == "down"
-    try
-      lnext
-    catch /^Vim\%((\a\+)\)\=:E553/
-      lfirst
-    endtry
-  endif
-endfunction
+" Highlight symbol under cursor on CursorHold
+" autocmd CursorHold * silent call CocActionAsync('highlight')
 
 
-" filetype detection and syntax markup
-augroup filetypes
-  autocmd!
-
-  au BufRead,BufNewFile *.bf     set filetype=brainfuck
-  au BufRead,BufNewFile *.bef    set filetype=befunge | source /home/blackcap/.config/nvim/ftplugin/befunge.vim
-  au BufRead,BufNewFile *.pyth   set filetype=pyth | set syntax=python
-  au BufRead,BufNewFile *.joy    set filetype=joy | set syntax=haskell
-  au BufRead,BufNewFile *.abe    set filetype=05AB1E | set syntax=haskell
-  au BufRead,BufNewFile *.fr     set filetype=frege | set syntax=haskell
-  au BufRead,BufNewFile *.json   setf json
-  au BufRead,BufNewFile *.ts     setf typescript
-  au BufRead,BufNewFile *.vv     setf V
-  au BufRead,BufNewFile *.emojic setf emojicode | set syntax=haskell
-  au BufRead,BufNewFile *.agda   setf Agda | set syntax=haskell
-  au BufRead,BufNewFile *.masc   setf mascarpone
-  au BufRead,BufNewFile *.fmc    setf formality | set syntax=python
-
-  " au BufRead,BufNewFile *.idr setf idris | set syntax=haskell
-  au Syntax,BufReadPost,BufNewFile *.hs call SyntaxRange#Include('\[C.block|', '|]', 'c', 'haskell')
-augroup END
-
-augroup startup
-  autocmd!
-  au VimEnter *
-    \ Arpeggio inoremap fj <Esc> |
-    \ Arpeggio inoremap jk <C-n> |
-    \ Arpeggio inoremap df <C-p>
-augroup END
 
 
-" execute buffer for various languages
-augroup makeCmd
-  autocmd!
-
-  au FileType Agda       call SetComp ('', 'agda %')
-  au FileType arduino    call SetComp ('', 'ardc . && ardup')
-  au FileType befunge    call SetComp ('', 'befungee %')
-  au FileType brainfuck  call SetComp ('', 'bfi %')
-  au FileType c          call SetComp ('gcc', 'gcc -O3 % -o %:r && ./%:r')
-  au FileType cs         call SetComp ('', 'dotnet run')
-  au FileType cpp        call SetComp ('', 'g++ -O3 -std=c++2a -fconcepts % -o %:r && ./%:r')
-  au FileType emojicode  call SetComp ('', 'emojicodec % && emojicode %:r.emojib')
-  au FileType go         call SetComp ('go', 'go run %')
-  au FileType haskell    call SetComp ('stack', 'stack run')
-  au FileType idris      call SetComp ('', 'idris % -o %:r && ./%:r')
-  au FileType java       call SetComp ('javac', 'javac *.java && java Main')
-  au FileType kotlin     call SetComp ('', 'kotlinc *.kt -include-runtime -d Main.jar && java -jar Main.jar')
-  au FileType javascript call SetComp ('', 'node %')
-  au FileType joy        call SetComp ('', 'joy %')
-  au FileType mascarpone call SetComp ('', 'mascarpone %')
-  au FileType perl       call SetComp ('perl', 'perl %')
-  au FileType php        call SetComp ('php', 'php %')
-  au FileType python     call SetComp ('phyton', 'python %')
-  au FileType rust       call SetComp ('cargo', 'cargo run %')
-  au FileType swift      call SetComp ('', 'swift %')
-  au FileType pyth       call SetComp ('', 'python3 /home/blackcap/.config/nvim/interp/pyth/pyth.py %')
-  au FileType 05AB1E     call SetComp ('', 'python3 /home/blackcap/.config/nvim/interp/05AB1E/05AB1E.py %')
-  au FileType sh         call SetComp ('', 'bash %')
-  au FileType zsh        call SetComp ('', 'zsh %')
-  au FileType formality  call SetComp ('', 'fmc %:r')
-
-  au FileType c,cpp,java,javascript
-        \ vmap <buffer><silent> = :ClangFormat<CR>|
-        \ nmap <buffer><silent> = :set opfunc=ClangFormatMotion<CR>g@|
-        \ nmap <buffer><silent> == V:ClangFormat<CR>|
-        \ nmap <buffer><silent> <F4> :ClangFormat<CR>
-
-augroup END
-
-function! ClangFormatMotion(type)
-  silent exec "'[,']ClangFormat"
-  silent exec 'let @/=@'
-endfunction
-
-function! MakeTerm()
-  let cmd='make run'
-  if empty(glob("Makefile"))
-    let cmd=&makeprg
-  endif
-  exec 'up|10sp term://'.cmd.' | nmap <buffer><Esc> ZQ'
-endfunction
-
-function! SetComp(comp, make)
-  if !empty(a:comp)
-    exec 'compiler '.a:comp
-  endif
-  if !empty(a:make)
-    let &makeprg=a:make
-  endif
-endfunction
-
-noremap <silent><C-j> :call MakeTerm()<CR>
-
-let g:quickrun_no_default_key_mappings=1
-let g:quickrun_config = {
-      \'*': {
-      \'outputter/buffer/split': ':5sp'},}
-noremap <silent><leader>r :QuickRun<CR>
-vnoremap <silent><leader>r :QuickRun<CR>
+" function! WrapLNext(direction)
+"   if a:direction == "up"
+"     try
+"       lprevious
+"     catch /^Vim\%((\a\+)\)\=:E553/
+"       llast
+"     endtry
+"   elseif a:direction == "down"
+"     try
+"       lnext
+"     catch /^Vim\%((\a\+)\)\=:E553/
+"       lfirst
+"     endtry
+"   endif
+" endfunction
 
 
-autocmd FileType help setlocal nospell nolist norelativenumber
-augroup vimrcEx
-  autocmd!
+" augroup CapsLockLED
+"   autocmd!
+"   autocmd InsertEnter * :silent !xset  led named 'Caps Lock'
+"   autocmd InsertLeave * :silent !xset -led named 'Caps Lock'
+"   autocmd VimLeave    * :silent !xset -led named 'Caps Lock'
+" augroup END
 
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it for commit messages, when the position is invalid, or when
-  " inside an event handler (happens when dropping a file on gvim).
-  autocmd BufReadPost *
-    \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
-    \   exe "normal g`\"" |
-    \ endif
-
-  " au FocusGained,BufEnter * :checktime
-
-  " Spellcheck text files
-  autocmd FileType text,markdown
-      \ setlocal spell spelllang=en|
-      \ inoremap <buffer> <C-k> <Esc>[s1z=``a|
-      \ norm zR
-      " \ inoremap <buffer> <bs> <c-w>|
-      " \ inoremap <buffer> <C-l> <Esc>[sea<C-x><C-s><C-n>|
-
-  " autocmd FileType text,markdown
-  "     \ au InsertEnter * silent exe ":! stenoon" |
-      " \ au InsertLeave * silent exe ":! stenooff"
-
-  autocmd FileType emojicode set completefunc=emoji#complete |
-        \ setlocal omnifunc=emoji#complete|
-        \ inoremap : :<C-x><C-o><C-p>|
-        \ inoremap <Esc> <esc>:%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge<CR>g;:echo ''<CR>
-
-
-  autocmd FileType css
-    \ vnoremap <buffer> <leader>ss :! css2sass<CR> |
-    \ vnoremap <buffer> <leader>cs :! sassc -a \| beautify-css<CR>
-
-  autocmd FileType css nnoremap <buffer> <leader>cc :%! cleancss % \| beautify-css<CR>:%s/,\n/, /g<CR>:nohl<CR>
-  autocmd FileType css nnoremap <buffer>  <leader>ss mqggVG:! css2sass<CR>:set filetype=sass<CR>'q
-  autocmd FileType sass nnoremap <buffer> <leader>ss mqggVG:! sassc -a \| beautify-css<CR>:set filetype=css<CR>'q
-
-  au FileType html vnoremap <leader>j :BLEvaluateSelection<CR> |
-                 \ noremap <leader>j V:BLEvaluateSelection<CR> |
-                 \ noremap <leader>k :BLEvaluateWord<CR>
-
-  autocmd FileType javascript vmap <leader>j :BLEvaluateSelection<CR> | noremap <leader>j V:BLEvaluateSelection<CR> | noremap <leader>k :BLEvaluateWord<CR>
-  autocmd FileType css vmap <leader>j :BLEvaluateSelection<CR> | noremap <leader>j V:BLEvaluateSelection<CR> | noremap <leader>k :BLEvaluateWord<CR>
-
-  " " autocmd FileType java setlocal omnifunc=javacomplete#Complete
-  " au User Ncm2Plugin call ncm2#register_source({
-  "       \ 'name': 'java',
-  "       \ 'priority': 9,
-  "       \ 'subscope_enable': 0,
-  "       \ 'scope': ['java'],
-  "       \ 'mark': 'java',
-  "       \ 'on_complete': ['ncm2#on_complete#omni', 'javacomplete#Complete'],
-  "       \ })
-  "
-  " " autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
-  " au User Ncm2Plugin call ncm2#register_source({
-  "       \ 'name': 'cs',
-  "       \ 'priority': 9,
-  "       \ 'subscope_enable': 0,
-  "       \ 'scope': ['cs'],
-  "       \ 'mark': 'cs',
-  "       \ 'on_complete': ['ncm2#on_complete#omni', 'OmniSharp#Complete'],
-  "       \ })
-
-  " autocmd BufWinLeave * silent! mkview
-  " autocmd BufWinEnter * silent! loadview
-  autocmd BufRead,BufNewFile * set signcolumn=yes
-
-  " au BufEnter * call ncm2#enable_for_buffer()
-  " au User Ncm2PopupOpen set completeopt=noinsert,menuone,noselect
-  " au User Ncm2PopupClose set completeopt=menuone,preview " ,longest
-
-  au TermOpen * setlocal nonumber norelativenumber noruler noshowmode laststatus=0
-augroup END
-
-augroup CapsLockLED
-  autocmd!
-  autocmd InsertEnter * :silent !xset  led named 'Caps Lock'
-  autocmd InsertLeave * :silent !xset -led named 'Caps Lock'
-  autocmd VimLeave    * :silent !xset -led named 'Caps Lock'
-augroup END
-
-augroup javascript_folding
-    au!
-    au FileType javascript setlocal foldmethod=syntax
-augroup END
 
 " ---- Keymaps
 
@@ -607,32 +160,22 @@ command WQ wq
 command Wq wq
 command W w
 command Q q
-command Bo !chromium % &
 nmap <F3> :retab<CR>:%s/\s\+$//e<CR>``
 " nmap <CR> :CtrlPBuffer<CR>
 " nnoremap <Leader><Leader> <C-^>
-nnoremap <silent><Leader><Leader> :execute("e ".ctrlp#mrufiles#list()[1])<CR>
 nnoremap <silent><C-p> :CtrlP<CR>:<CR>
-" nnoremap <Leader>y "+y
-" nnoremap <Leader>p "+p
-
-noremap <leader>e :Ranger<CR>
 
 nmap <silent><leader>o :FuzzyOpen<CR>
-nmap <silent><leader>f :FuzzyGrep<CR>
+" nmap <silent><leader>f :FuzzyGrep<CR>
 " nmap <leader>m :MRU<CR>:nmap <buffer> <Esc <backspace>> ZQ<CR>
 nmap <silent><leader>m :CtrlPMRUFiles<CR>
 
-nnoremap Q <nop>
-nmap q: :q
-nmap Q: :q
-cnoremap Q! q!
+" nnoremap Q <nop>
+" nmap Q: :q
+" nmap q: :q
+" cnoremap Q! q!
 
-nnoremap <silent><leader>g :GundoToggle<cr>
-" nnoremap <silent><leader>r :TREPLSendFile<cr>
-" vnoremap <silent><leader>r :TREPLSendFile<cr>
-" nnoremap <silent><leader>l :TREPLSendLine<cr>
-" vnoremap <silent><leader>l :TREPLSendSelection<cr>
+
 
 " Useful maps
 " hide/close terminal
@@ -642,14 +185,10 @@ nnoremap <silent> ,tl :call neoterm#clear()<cr>
 " kills the current job (send a <c-c>)
 nnoremap <silent> ,tc :call neoterm#kill()<cr>
 
-tnoremap <a-J> <C-\><C-n>
+tmap <a-j> <C-\><C-n>
 
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
-nnoremap <silent><Leader>c :CodiUpdate<CR>
-
-noremap <silent><leader>hh :%!xxd<CR>
-noremap <silent><leader>hr :%!xxd -r<CR>
 
 command Codex silent!! codex update > /dev/null &
 command Fixjs silent!! eslint --fix %
@@ -665,20 +204,23 @@ let g:AutoPairsMapBS = 1
 " nmap <tab> za
 
 nnoremap <silent><Leader>w :up<CR>
-noremap <Left> g;
-noremap <Right> g,
+" noremap <Left> g;
+" noremap <Right> g,
+
+"
+" " Comfortable motion
+" let g:comfortable_motion_no_default_key_mappings = 1
+" let g:comfortable_motion_friction = 1600.0
+" let g:comfortable_motion_air_drag = 16.0
+" let g:comfortable_motion_impulse_multiplier = 0.8  " Feel free to increase/decrease this value.
+" nnoremap <silent> <C-d> :call comfortable_motion#flickDist(g:comfortable_motion_impulse_multiplier * winheight(0) * 1)<CR>
+" nnoremap <silent> <C-u> :call comfortable_motion#flickDist(g:comfortable_motion_impulse_multiplier * winheight(0) * -1)<CR>
+" nnoremap <silent> <C-f> :call comfortable_motion#flickDist(g:comfortable_motion_impulse_multiplier * winheight(0) * 2)<CR>
+" nnoremap <silent> <C-b> :call comfortable_motion#flickDist(g:comfortable_motion_impulse_multiplier * winheight(0) * -2)<CR>
 
 
-" Comfortable motion
-let g:comfortable_motion_friction = 400.0
-let g:comfortable_motion_air_drag = 4.0
-let g:comfortable_motion_no_default_key_mappings = 1
-let g:comfortable_motion_impulse_multiplier = 0.5  " Feel free to increase/decrease this value.
-nnoremap <silent> <C-d> :call comfortable_motion#flickDist(g:comfortable_motion_impulse_multiplier * winheight(0) * 1)<CR>
-nnoremap <silent> <C-u> :call comfortable_motion#flickDist(g:comfortable_motion_impulse_multiplier * winheight(0) * -1)<CR>
-nnoremap <silent> <C-f> :call comfortable_motion#flickDist(g:comfortable_motion_impulse_multiplier * winheight(0) * 2)<CR>
-nnoremap <silent> <C-b> :call comfortable_motion#flickDist(g:comfortable_motion_impulse_multiplier * winheight(0) * -2)<CR>
-
+let g:swap_no_default_key_mappings = 1
+let g:switch_mapping = "-"
 nmap <silent>- :Switch<cr>
 
 let g:switch_custom_definitions =
@@ -706,17 +248,24 @@ nmap sl <Plug>(swap-next)
 nmap ss <Plug>(swap-interactive)
 
 let g:move_map_keys=0
-nmap sj <Plug>MoveLineDown
-nmap sk <Plug>MoveLineUp
-vmap <Down> <Plug>MoveBlockDown
-vmap <Up> <Plug>MoveBlockUp
+" nmap sj <Plug>MoveLineDown
+" nmap sk <Plug>MoveLineUp
+" vmap <Down> <Plug>MoveBlockDown
+" vmap <Up> <Plug>MoveBlockUp
+
+nmap sj :m+1<cr>
+nmap sk :m-2<cr>
+vmap sj :m+1\|norm!gv<cr>
+vmap sk :m-2\|norm!gv<cr>
+vmap J :m'>+1\|norm!gv<cr>
+vmap K :m'<-2\|norm!gv<cr>
 
 vmap H <Plug>(expand_region_shrink)
 vmap L <Plug>(expand_region_expand)
 
 " nmap <silent><leader>p :norm viio<c-v><esc>?([^)]*) *\n* *{<c-v><cr>vi)o<c-v><esc><cr>
 nmap <silent><leader>p ?([^()]*)<cr>:noh<cr>
-nmap <C-t> :CtrlPBufTag<cr>
+" nmap <C-t> :CtrlPBufTag<cr>
 
 
 " Stolen from and depends on tagbar
@@ -841,20 +390,308 @@ onoremap <silent> iK :call TextObjWordBasedColumn("iW")<cr>
 cmap <C-j> <Cr>
 cmap <C-e> <Tab>
 
-" nmap gm m':call MoveLessMode()<cr>
-map gm :call MoveLessMode()<cr>
 
 nmap <leader>c :e ~/.config/nvim/init.vim<cr>
-nmap <silent><esc> :silent! onl<cr>
 
-highlight HighlightedyankRegion cterm=reverse gui=reverse
-let g:highlightedyank_highlight_duration = 200
-
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 " let g:haskell_indent_disable = 1
 
 vnoremap gn :NR<CR>
 nmap  <silent> gn <Plug>NrrwrgnDo
 
-noremap <silent>go :norm o<cr>
-noremap <silent>gO :norm O<cr>
+" noremap <silent>go :norm o<cr>
+" noremap <silent>gO :norm O<cr>
+" noremap ]] ]]%%
+" noremap [[ ]]%%
+
+noremap <leader>j ]]%%
+noremap <leader>k [[%%
+
+
+
+" Visual Multi
+" nmap <A-j> <Plug>(VM-Add-Cursor-Down)
+" nmap <A-k> <Plug>(VM-Add-Cursor-Up)
+" nmap <A-h> <Plug>(VM-Add-Cursor-Left)
+" nmap <A-l> <Plug>(VM-Add-Cursor-Right)
+
+" nm <c-q> ZQ
+
+let g:fzf_action = { 'space': 'accept' }
+
+
+" ---------------
+
+
+runtime after/colors.vim
+runtime after/vifm.vim
+runtime after/languages.vim
+runtime after/sortgroup.vim
+runtime after/fun.vim
+runtime macros/matchit.vim
+" runtime after/sync.vim
+
+
+" ---------------
+
+set autoindent
+set autoread
+set autowrite " Automatically :write before running commands
+set backspace=2   " Backspace deletes like most programs in insert mode
+set backspace=indent,eol,start
+set completeopt=menu,preview
+
+"set conceallevel=0
+set conceallevel=2
+set concealcursor=
+set dictionary+=/usr/share/dict/words
+set expandtab
+set exrc
+set fcs=eob:\ 
+set foldmethod=manual
+set hidden
+set history=50
+set ic
+set incsearch
+set laststatus=1
+set lazyredraw
+set linebreak
+set list listchars=tab:»·,trail:·,nbsp:·
+set noautochdir
+set nobackup
+set nofixendofline
+set noshowcmd
+set noshowmode
+set noswapfile
+"set nowrap
+set nowritebackup
+set number
+set numberwidth=5
+set relativenumber
+set scrolljump=10
+set scrolloff=4
+set shadafile=/home/blackcap/.vim/shada
+set shiftround
+set shiftwidth=2
+set shm+=sc
+set shortmess+=c
+set sidescrolloff=4
+set signcolumn="no"
+set smartindent
+set splitbelow
+set tabstop=2
+set ttyfast
+set undofile
+set undolevels=1000
+set undoreload=10000
+set wildmode=longest:full,list:full
+set noignorecase
+
+
+function! OnEsc()
+  let l:listed  = &buflisted
+  let l:special = &buftype != ''
+
+  if &filetype == 'nerdtree'
+    quit
+  endif
+
+
+  if l:special && ! l:listed
+    if winnr () == 1
+      bl
+    else
+      quit
+    endif
+    return
+  endif
+
+  if winnr () == 1 && l:listed && ! l:special
+    silent! only
+  endif
+
+  silent! hide
+endfunction
+
+nnoremap <silent><esc> :call OnEsc()<cr>
+
+" ----------
+
+
+func TrimCompare(i1, i2)
+  let x = trim(a:i1)
+  let y = trim(a:i2)
+  return x == y ? 0 : x > y ? 1 : -1
+endfunc
+
+function! DeleteUniqueMotion(type)
+  silent exec 'norm! `[v`]"=join(uniq(split(@@,"\n"), "TrimCompare"),"\n")p'
+  silent exec 'let @/=@'
+endfunction
+
+function! SortMotion (type)
+  echomsg (a:type)
+
+  if (a:type == 'line')
+    silent exec 'norm! `[V`]"=sort(split(@@, "\n"), "TrimCompare")p'
+  elseif (a:type == 'block')
+    " silent! exec 'norm! `[`]"=join(sort(split(@@, "\n"), "TrimCompare"), "\n")\p'
+    silent! exec 'norm! `[`]y'
+    exec setreg ('@@', join (sort (split (@@, "\n"), "TrimCompare"), "\n"), 'b')
+    silent! exec 'norm! `[`]p'
+  elseif (a:type == 'char')
+    silent! exec 'norm! `[v`]"=join(sort(split(@@, " *,\\? \\+"), "TrimCompare"), ", ")p'
+  endif
+
+  silent exec 'let @/=@'
+endfunction
+
+nmap     <silent>du :set opfunc=DeleteUniqueMotion<CR>g@
+nnoremap <silent>gs :set opfunc=SortMotion<CR>g@
+xnoremap <silent>gs :<C-U>call SortMotion (visualmode())<CR>
+vnoremap <silent>gs "=join(sort(split(@@, "\n"), "TrimCompare"), "\n")<cr>p
+
+
+nnoremap <leader>n :NERDTreeFocus<cr>
+
+" let g:NERDTreeQuitOnOpen = 1
+
+" --------
+
+" Tags refering to the current file
+  " :set tagfunc=TagList
+"   :lt /.
+"
+function! TagList(pattern, ...)
+  let pth    = expand  ('%:p')
+  let result = filter (taglist (a:pattern, pth), { i, ta -> fnamemodify (ta['filename'], ":p") == pth })
+  call sort (result, { a, b -> eval (a['cmd']) >= eval (b['cmd'])})
+  return result
+endfunc
+
+" nnoremap <leader>t :CtrlPBufTagAll<cr>
+nnoremap tt :CtrlPTag<cr>
+nnoremap TT :CtrlPTagBuffAll<cr>
+
+" --------
+
+" :h i_CTRL-G_u
+"   break undo sequence, start new change
+"
+imap <CR> <C-g>u<CR>
+
+imap <C-j> <End><cr>
+
+" Trigger eol stuff
+"
+" input:
+"   ifunc Foo (<esc>o
+"
+" result:
+"   func Foo ()
+"     |
+"
+" input:
+"   ifunc Foo(<esc>A<cr>
+"
+" result:
+"   func Foo ()
+"     |
+"   endfunc
+"
+nmap o A<cr>
+
+" --------
+
+func! Blink(...)
+  if ! &l:cursorline
+    let &l:cursorline=1
+    call timer_start(300, Lam("let &l:cursorline=0"))
+  endif
+endf
+
+
+func! CursorX(key)
+  exec ("norm!".v:count1.a:key)
+  if v:count > 5
+    call Blink()
+  endif
+endf
+
+nnoremap <silent>k :<C-U>call CursorX('k')<cr>
+nnoremap <silent>j :<C-U>call CursorX('j')<cr>
+
+" -------
+
+func! HistNav(key)
+  let l:cp = getcurpos()
+  let &l:cursorline=0
+  exec ("norm!".v:count1.a:key)
+  if l:cp != getcurpos()
+    call Blink()
+  endif
+endf
+
+nnoremap <silent><C-i> :<C-U>call HistNav('	')<cr>
+nnoremap <silent><C-o> :<C-U>call HistNav('')<cr>
+
+" -------
+
+func! SetWinLine(x,...)
+  let l:y  = winline ()
+  let l:p1 = getcurpos ()[1]
+
+  if a:x > l:y
+    exec ('norm!'.(a:x-l:y).'')
+  elseif a:x < l:y
+    exec ('norm!'.(l:y-a:x).'')
+  endif
+
+  " <c-e>/<c-y> will move the cursor when
+  " used at the end of the screen
+
+  let l:p2 = getcurpos ()[1]
+
+  if l:p1 != l:p2
+    exec (l:p1)
+
+    if l:p1 < l:p2
+      norm! zt
+    else
+      norm! zb
+    endif
+  endif
+endfunc
+
+function! JumpMRU(...)
+  let l:off = winline ()
+  exec ("e ".ctrlp#mrufiles#list()[v:count1])
+  call SetWinLine (l:off)
+endfunction
+
+" [count]<leader><leader>
+"
+" Jump to the N-th most recently used file (default=1).
+" Keep the cursor in the same position as before the jump.
+"
+nnoremap <silent><Leader><Leader> :<C-U>call JumpMRU()<CR>
+
+" -------------
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1] =~# '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+  \ pumvisible() ? "\<C-y>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ coc#refresh()
+
+" Coc changes my scrolloff!
+"
+augroup CocScrollOffFix
+  au!
+  au InsertEnter * let s:so=&l:scrolloff
+  au InsertLeave * let &l:scrolloff=s:so
+augroup END
+

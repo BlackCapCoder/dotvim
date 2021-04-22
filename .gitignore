@@ -1,3 +1,6 @@
+.netrwhist
+.init.vim.swp
 dein/
 neovimfs/
-.netrwhist
+interp/
+spell/

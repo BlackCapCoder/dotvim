@@ -1,9 +1,54 @@
 {
   "languageserver": {
+    "python": {
+      "command": "python",
+      "args": [
+        "-mpyls",
+        "-vv",
+        "--log-file",
+        "/tmp/lsp_python.log"
+      ],
+      "trace.server": "verbose",
+      "filetypes": [
+        "python"
+      ],
+      "settings": {
+        "pyls": {
+          "enable": true,
+          "trace": {
+            "server": "verbose"
+          },
+          "commandPath": "",
+          "configurationSources": [
+            "pycodestyle",
+          ],
+          "plugins":
+          {
+            "jedi_completion":     { "enabled": false },
+            "jedi_hover":          { "enabled": false },
+            "jedi_references":     { "enabled": false },
+            "jedi_signature_help": { "enabled": false },
+            "jedi_symbols":        { "enabled": false },
+            "mccabe":              { "enabled": false },
+            "preload":             { "enabled": false },
+            "pydocstyle":          { "enabled": false },
+            "pyflakes":            { "enabled": false },
+            "rope_completion":     { "enabled": false },
+            "yapf":                { "enabled": true },
+            "pycodestyle":         { "enabled": false },
+          },
+        },
+      },
+    },
     "bash": {
       "command": "bash-language-server",
       "args": ["start"],
       "filetypes": ["sh"],
+      "ignoredRootPaths": ["~"]
+    },
+    "sourcekit-lsp": {
+      "command": "~/tmp/sourcekit-lsp/toolchain/usr/bin/sourcekit-lsp",
+      "filetypes": ["swift"],
       "ignoredRootPaths": ["~"]
     },
     "ccls": {
@@ -15,11 +60,46 @@
            "directory": "/tmp/ccls"
          }
        }
+    },
+    "haskell": {
+      "command": "haskell-language-server-wrapper",
+      "args": [
+        "--lsp"
+      ],
+      "rootPatterns": [
+        ".stack.yaml",
+        ".hie-bios",
+        "BUILD.bazel",
+        "cabal.config",
+        "package.yaml"
+      ],
+      "filetypes": [
+        "hs",
+        "lhs",
+        "haskell"
+      ],
+      "requireRootPattern": true,
+      "ignoredRootPaths": [
+        "ghc.mk",
+        "/home/blackcap/tmp/ghc/ghc/",
+        "/home/blackcap/tmp/ghc/ghc/compiler/",
+        "/home/blackcap/tmp/ghc/ghc/compiler/GHC/",
+      ],
     }
   }
 
-  , "coc.preferences.noselect": false
-  , "coc.preferences.snippetIndicator": " ✀"
-  , "coc.preferences.numberSelect": false
-  , "java.errors.incompleteClasspath.severity": "ignore"
+  , "coc.preferences.previewAutoClose": true
+  , "coc.preferences.extensionUpdateCheck": "never"
+  , "suggest.maxCompleteItemCount": 50
+  , "tabnine.disable_filetypes": ["hs", ".hs", "haskell"]
+  , "suggest.enablePreselect": true
+  , "suggest.noselect": false
+  , "tabnine.limit": 5
+  , "suggest.preferCompleteThanJumpPlaceholder": true
+  , "suggest.localityBonus": true
+  , "suggest.languageSourcePriority": 99
+  , "suggest.minTriggerInputLength":  0
+  , "suggest.removeDuplicateItems":   true
+  , "suggest.triggerAfterInsertEnter": true
+  , "diagnostic.enableSign": false
 }

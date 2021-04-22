@@ -1,1 +1,0 @@
-/home/blackcap/.config/nvim/dein/repos/github.com/euclio/vim-markdown-composer/target/release/markdown-composer: /home/blackcap/.config/nvim/dein/repos/github.com/euclio/vim-markdown-composer/src/main.rs
