@@ -1,5 +1,6 @@
 .netrwhist
 .init.vim.swp
+.vim/
 dein/
 neovimfs/
 interp/
